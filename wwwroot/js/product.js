@@ -45,7 +45,7 @@ function fetchData() {
                 return [];
             }
             return response.json();
-        })
+        })123
         .then(data => {
             console.log("成功抓取資料:", data);
             data.forEach(item => {
