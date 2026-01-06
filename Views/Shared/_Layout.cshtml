@@ -6,13 +6,15 @@
     <title>@ViewData["Title"] - MyMesSystem_F</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
     <link rel="stylesheet" href="~/MyMesSystem_F.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-0">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MyMesSystem_F</a>
+                <a class="navbar-brand">你好，我是洪欣汝！</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -20,22 +22,87 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">首頁</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">隱私權政策</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="btn btn-outline-danger" asp-area="" asp-controller="Home" asp-action="Login">登出</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <div class="container-fluid p-0">
+        <div class="row m-0">
+            <nav class="hover-sidebar bg-light border-end">
+                <div class="sidebar-content pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark py-3 border-bottom d-flex justify-content-between align-items-center"
+                               data-bs-toggle="collapse" href="#aboutMe">
+                                <span><i class="bi bi-person-fill me-2"></i>關於欣汝</span>
+                                <small>▼</small>
+                            </a>
+                            <div class="collapse show" id="aboutMe">
+                                <ul class="nav flex-column ps-3 bg-white">
+                                    <li class="nav-item">
+                                        <a class="nav-link text-muted py-2" href="@Url.Action("About", "Home")">基本簡介</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-muted py-2" href="@Url.Action("LanguageAbility", "Home")">語言能力 (N5/550)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link text-dark py-3 border-bottom d-flex justify-content-between align-items-center"
+                               data-bs-toggle="collapse" href="#techSkills">
+                                <span><i class="bi bi-code-slash me-2"></i>核心技術</span>
+                                <small>▼</small>
+                            </a>
+                            <div class="collapse" id="techSkills">
+                                <ul class="nav flex-column ps-3 bg-white">
+                                    <li class="nav-item"><a class="nav-link text-muted py-2" href="#">前端: JS / CSHTML</a></li>
+                                    <li class="nav-item"><a class="nav-link text-muted py-2" href="#">後端: C++ Service</a></li>
+                                    <li class="nav-item"><a class="nav-link text-muted py-2" href="#">資料庫: MySQL</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark py-3 border-bottom d-flex justify-content-between align-items-center"
+                               data-bs-toggle="collapse" href="#menuMES">
+                                <span><i class="bi bi-cpu me-2"></i>MES 專案開發經驗</span>
+                                <small>▼</small>
+                            </a>
+                            <div class="collapse show" id="menuMES">
+                                <ul class="nav flex-column ps-3 bg-white">
+                                    <li class="nav-item">
+                                        <a class="nav-link text-muted py-2" href="@Url.Action("Production", "Project")">生產現況 (CRUD 管理)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-muted py-2" href="@Url.Action("ApiLogs", "Project")">API 串接紀錄 (系統整合)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-muted py-2" href="@Url.Action("Logic", "Project")">自動化邏輯 (工時計算)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="main-content px-md-4 py-4 w-100">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2025 - MyMesSystem_F - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>

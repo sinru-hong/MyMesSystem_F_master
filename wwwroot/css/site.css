@@ -20,3 +20,51 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* 設定滑鼠移過去時的背景顏色 */
+.hover-sidebar .nav-link:hover {
+    background-color: rgba(0, 0, 0, 0.05); /* 淡淡的深灰色 (使用透明度) */
+    color: #000 !important; /* 確保文字顏色清晰 */
+    transition: background-color 0.3s ease; /* 增加平滑過渡感 */
+}
+
+/* 如果你希望選單項目的底線在 hover 時不要消失，可以維持 border-bottom */
+.hover-sidebar .nav-link {
+    transition: background-color 0.3s ease;
+}
+
+/* 1. 側邊欄初始狀態：縮得很窄 */
+.hover-sidebar {
+    position: fixed; /* 固定在最左側 */
+    top: 56px; /* 避開上方導覽列高度 */
+    left: 0;
+    bottom: 0;
+    width: 10px; /* 初始只留一小條感應區 */
+    overflow-x: hidden;
+    transition: width 0.3s ease; /* 平滑展開效果 */
+    z-index: 1000;
+    background-color: #f8f9fa;
+}
+
+/* 2. 初始隱藏文字內容，避免文字擠在一起 */
+.sidebar-content {
+    width: 200px; /* 這是展開後的內容寬度 */
+    opacity: 0;
+    transition: opacity 0.2s;
+    white-space: nowrap; /* 防止換行 */
+}
+
+/* 3. 當滑鼠移入導覽欄時：展開並顯示內容 */
+.hover-sidebar:hover {
+    width: 200px; /* 展開寬度 */
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1); /* 增加陰影更有層次感 */
+}
+
+    .hover-sidebar:hover .sidebar-content {
+        opacity: 1; /* 顯示文字 */
+    }
+
+/* 4. 主內容區調整：因為選單是 fixed，不佔空間，所以這裡給一點左邊距即可 */
+.main-content {
+    padding-left: 20px;
+}

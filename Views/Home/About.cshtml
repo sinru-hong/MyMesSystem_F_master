@@ -1,0 +1,54 @@
+﻿@{
+    ViewData["Title"] = "基本簡介";
+}
+
+<div class="container mt-4">
+    <div class="row align-items-center mb-5">
+        <div class="col-auto">
+            <img src="~/images/lilian_Square.jpg"
+                 class="rounded-circle border p-1"
+                 alt="欣汝"
+                 style="width: 150px; height: 150px; object-fit: cover;">
+        </div>
+        <div class="col ps-md-5">
+            <h2 class="fw-bold mb-2">欣汝</h2>
+            <p class="text-secondary mb-3">🇹🇼 Taiwan</p>
+
+            <div class="border rounded p-3 bg-light d-inline-block shadow-sm">
+                <span class="font-monospace text-dark">
+                    「前後端分離思維，打造易於維護的 MES 系統。」
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <h5 class="fw-bold mb-4">學經歷與專長</h5>
+            <ul class="list-unstyled">
+                <li class="mb-3">
+                    <i class="bi bi-mortarboard-fill me-2 text-primary"></i>
+                    亞洲大學 資訊工程學系 光電通訊組
+                </li>
+                <li class="mb-3">
+                    <i class="bi bi-briefcase-fill me-2 text-primary"></i>
+                    益模管理技術 - 助理工程師 (2024/05 ~ 2025/12)
+                </li>
+                <li class="mb-3">
+                    <i class="bi bi-translate me-2 text-primary"></i>
+                    語言能力：JLPT N5、TOEIC 550
+                </li>
+                <li class="mb-3">
+                    <i class="bi bi-gear-wide-connected me-2 text-primary"></i>
+                    擅長技術：C++、JavaScript、MySQL、Postman、GitHub、SourceTree
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/about.css" />
+}
