@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using MyMesSystem_F.Models;
 
 namespace MyMesSystem_F.Controllers
@@ -7,10 +8,13 @@ namespace MyMesSystem_F.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IConfiguration _configuration;
 
-        public HomeController(ILogger<HomeController> logger)
+        // 只留下這一個就好！把原本只有 ILogger 的那個刪掉
+        public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
         }
 
         // 1. 顯示登入頁面
@@ -33,7 +37,8 @@ namespace MyMesSystem_F.Controllers
             using (var client = new HttpClient())
             {
                 // 呼叫你的後端 API 專案網址
-                var apiUrl = "https://localhost:44326/api/auth/login";
+                var baseUrl = _configuration.GetValue<string>("ApiSettings:BaseUrl");
+                var apiUrl = $"{baseUrl}api/auth/login";
                 var content = JsonContent.Create(new { Username = username, Password = password });
 
                 var response = await client.PostAsync(apiUrl, content);
@@ -62,13 +67,13 @@ namespace MyMesSystem_F.Controllers
 
                     return RedirectToAction("Index");
                 }
-                //處理環境或安全配置錯誤（如 IIS 攔截）
-                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    // 不再嘗試解析 LoginResponse，因為 401 通常來自伺服器攔截回傳的 HTML
-                    ViewBag.Error = "登入服務權限異常 (401)，請聯絡管理員檢查後端 API 存取權限。";
-                    return View("Login");
-                }
+                ////處理環境或安全配置錯誤（如 IIS 攔截）
+                //else if (response.StatusCode == System.Net.httptatusCode.Unauthorized)
+                //{
+                //    // 不再嘗試解析 LoginResponse，因為 401 通常來自伺服器攔截回傳的 HTML
+                //    ViewBag.Error = "登入服務權限異常 (401)，請聯絡管理員檢查後端 API 存取權限。";
+                //    return View("Login");
+                //}
                 //處理不可預期的伺服器崩潰，並保留偵錯資訊
                 else
                 {
@@ -118,11 +123,6 @@ namespace MyMesSystem_F.Controllers
         }
 
         public IActionResult About()
-        {
-            return View();
-        }
-
-        public IActionResult LanguageAbility()
         {
             return View();
         }

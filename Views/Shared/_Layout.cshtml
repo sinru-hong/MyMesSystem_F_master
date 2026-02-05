@@ -51,10 +51,10 @@
                             <div class="collapse show" id="aboutMe">
                                 <ul class="nav flex-column ps-3 bg-white">
                                     <li class="nav-item">
-                                        <a class="nav-link text-muted py-2" href="@Url.Action("About", "Home")">基本簡介</a>
+                                        <a class="nav-link text-muted py-2" href="@Url.Action("About", "Projects")">基本簡介</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link text-muted py-2" href="@Url.Action("LanguageAbility", "Home")">語言能力 (N5/550)</a>
+                                        <a class="nav-link text-muted py-2" href="@Url.Action("LanguageAbility", "Projects")">語言能力 (N5/550)</a>
                                     </li>
                                 </ul>
                             </div>
@@ -81,15 +81,27 @@
                                 <small>▼</small>
                             </a>
                             <div class="collapse show" id="menuMES">
-                                <ul class="nav flex-column ps-3 bg-white">
+                                <ul class="nav flex-column ps-3 bg-white border-start border-3 border-info">
                                     <li class="nav-item">
-                                        <a class="nav-link text-muted py-2" href="@Url.Action("Production", "Project")">生產現況 (CRUD 管理)</a>
+                                        <a class="nav-link py-3 text-dark border-bottom" href="@Url.Action("MasterData", "Projects")">
+                                            <i class="bi bi-table text-primary me-2"></i>
+                                            <strong>主數據管理 (MDM)</strong><br />
+                                            <small class="text-muted">支援高效 CRUD 與批次導入導出</small>
+                                        </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link text-muted py-2" href="@Url.Action("ApiLogs", "Project")">API 串接紀錄 (系統整合)</a>
+                                        <a class="nav-link py-3 text-dark border-bottom" href="@Url.Action("FileIntegration", "Projects")">
+                                            <i class="bi bi-file-earmark-excel text-success me-2"></i>
+                                            <strong>導入結合共享資料夾 IO </strong><br />
+                                            <small class="text-muted">Excel 解析與伺服器共享資料夾 IO 操作</small>
+                                        </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link text-muted py-2" href="@Url.Action("Logic", "Project")">自動化邏輯 (工時計算)</a>
+                                        <a class="nav-link py-3 text-dark" href="@Url.Action("ApiMonitor", "Projects")">
+                                            <i class="bi bi-cloud-arrow-down text-info me-2"></i>
+                                            <strong>跨系統介面 (API)</strong><br />
+                                            <small class="text-muted">非同步資料串接</small>
+                                        </a>
                                     </li>
                                 </ul>
                             </div>

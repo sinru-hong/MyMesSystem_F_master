@@ -1,8 +1,12 @@
 ﻿// product.js
 console.log("前端 JS 已就緒");
 
-// 這是你未來後端 API 的位址 (記得根據你後端啟動後的 Port 做修改)
 const BACKEND_URL = "https://localhost:44326";
+// 修改為 Go 後端的網址
+//const BACKEND_URL = "http://localhost:8080";
+
+// 確保 fetch 的路徑是對的
+//fetch(`${BACKEND_URL}/api/Product`)
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log("網頁載入完成，準備綁定事件");
@@ -15,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function fetchData() {
-    // 這裡就是你筆記提到的「非同步通訊 (AJAX/Fetch)」
     //#region 強型別回傳
     //fetch(`${BACKEND_URL}/api/Product`)
     //    .then(response => response.json())
@@ -68,3 +71,40 @@ function fetchData() {
         });
     //#endregion
 }
+
+//連接go後端用的
+//function fetchData() {
+//    console.log("開始抓取產品資料...");
+
+//    // 指向 Go 後端的 complex 路由
+//    fetch(`${BACKEND_URL}/api/Product/complex`)
+//        .then(response => {
+//            console.log("HTTP 狀態碼:", response.status);
+//            if (response.status === 204) return [];
+//            return response.json();
+//        })
+//        .then(data => {
+//            console.log("成功抓取資料:", data);
+
+//            const list = document.getElementById('productList');
+//            if (!list) return;
+
+//            // 修正點：在迴圈「之前」清空舊內容，才不會只剩最後一筆
+//            list.innerHTML = '';
+
+//            // 修正點：移除原本重複的巢狀 data.forEach
+//            data.forEach(item => {
+//                const li = document.createElement('li');
+//                li.className = 'list-group-item';
+
+//                // 修正點：確保對應 Go 後端 struct 標籤的大小寫 (如 ProductName)
+//                li.textContent = `產品：${item.ProductName} (編號：${item.ProductID}) - 價格：${item.Price}`;
+
+//                list.appendChild(li);
+//            });
+//        })
+//        .catch(err => {
+//            console.error("Fetch 過程發生錯誤:", err);
+//            alert("抓取失敗，請確認 Go 後端服務已啟動。");
+//        });
+//}
