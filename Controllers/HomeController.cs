@@ -25,7 +25,7 @@ namespace MyMesSystem_F.Controllers
 
         // 2. 處理登入驗證
         [HttpPost]
-        public async Task<IActionResult> VerifyLogin(string username, string password)
+        public async Task<IActionResult> VerifyLogin(string emplNo, string password)
         {
             //// 這裡暫時用簡單的邏輯，之後可以改成連資料庫
             //if (username == "admin" && password == "1234")
@@ -36,10 +36,9 @@ namespace MyMesSystem_F.Controllers
 
             using (var client = new HttpClient())
             {
-                // 呼叫你的後端 API 專案網址
                 var baseUrl = _configuration.GetValue<string>("ApiSettings:BaseUrl");
-                var apiUrl = $"{baseUrl}api/auth/login";
-                var content = JsonContent.Create(new { Username = username, Password = password });
+                var apiUrl = $"{baseUrl}api/users/login";
+                var content = JsonContent.Create(new { EmplNo = emplNo, Password = password });
 
                 var response = await client.PostAsync(apiUrl, content);
 
@@ -61,7 +60,7 @@ namespace MyMesSystem_F.Controllers
                     if (result == null || result.Success == false)
                     {
                         ViewBag.Error = result?.Message ?? "帳號或密碼錯誤";
-                        ViewBag.SavedUsername = username;
+                        ViewBag.SavedUsername = emplNo;
                         return View("Login");
                     }
 

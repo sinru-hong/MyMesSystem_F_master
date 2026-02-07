@@ -15,6 +15,6 @@
         public string Token { get; set; }
 
         // 使用者基本資訊 (可選)
-        public string Username { get; set; }
+        public string emplNo { get; set; }
     }
 }
