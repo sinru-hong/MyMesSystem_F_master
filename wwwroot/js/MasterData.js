@@ -38,6 +38,100 @@ function queryFiles() {
 }
 // #endregion
 
+// #region 新增
+document.getElementById('btnAdd').addEventListener('click', function () {
+    const tbody = document.getElementById('dataTableBody');
+    const newRow = document.createElement('tr');
+
+    // 💡 關鍵：加上 'is-new' class 方便保存按鈕搜尋
+    newRow.className = 'table-warning is-new';
+
+    const nextIndex = tbody.rows.length + 1;
+
+    newRow.innerHTML = `
+        <td>${nextIndex}</td>
+        <td>
+            <button class="btn btn-sm btn-info text-white upload-btn">上傳</button>
+            <button class="btn btn-sm btn-danger cancel-new-row">取消</button>
+            <input type="file" class="d-none row-file-input">
+        </td>
+        <td><input type="text" class="form-control form-control-sm" name="newFilePath" placeholder="請上傳檔案..."></td>
+        <td><input type="text" class="form-control form-control-sm" name="newRemark"></td>
+        <td><input type="text" class="form-control form-control-sm" name="newCreator" value="${document.getElementById('inputCreator').value}" readonly></td>
+        <td><input type="text" class="form-control form-control-sm" name="newCreateTime" value="${document.getElementById('inputCreateTime').value}" readonly></td>
+        <td>-</td>
+        <td>-</td>
+    `;
+
+    tbody.insertBefore(newRow, tbody.firstChild);
+
+    // 綁定上傳與取消按鈕邏輯 (保持不變)
+    const fileInput = newRow.querySelector('.row-file-input');
+    const pathInput = newRow.querySelector('[name="newFilePath"]');
+    newRow.querySelector('.upload-btn').addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) pathInput.value = e.target.files[0].name;
+    });
+    newRow.querySelector('.cancel-new-row').addEventListener('click', () => newRow.remove());
+});
+// #endgion
+
+// #region 保存
+document.getElementById('btnSave').addEventListener('click', async function () {
+    // 1. 抓取所有標記為新增的行
+    const newRows = document.querySelectorAll('#dataTableBody tr.is-new');
+
+    if (newRows.length === 0) {
+        alert("目前沒有需要保存的新增資料。");
+        return;
+    }
+
+    // 這裡我們示範「逐行保存」，若要一次送多筆則需要更複雜的後端接法
+    for (let row of newRows) {
+        const fileInput = row.querySelector('.row-file-input');
+        const filePath = row.querySelector('[name="newFilePath"]').value;
+        const remark = row.querySelector('[name="newRemark"]').value;
+        const creator = row.querySelector('[name="newCreator"]').value;
+
+        if (!filePath) {
+            alert("請確保所有新增行皆已上傳檔案或填寫路徑。");
+            return;
+        }
+
+        // 2. 封裝 FormData
+        const formData = new FormData();
+        if (fileInput.files.length > 0) {
+            formData.append('file', fileInput.files[0]);
+        }
+        formData.append('remark', remark);
+        formData.append('creator', creator);
+
+        try {
+            // 3. 呼叫 API
+            const response = await fetch(`${BACKEND_URL}/api/MasterData/SaveMasterData`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                console.log("保存成功一筆");
+                row.classList.remove('is-new', 'table-warning'); // 移除新增標記與顏色
+                // 可以選擇將 input 轉為純文字，或直接刷新
+            } else {
+                const err = await response.json();
+                alert("保存發生錯誤: " + err.message);
+            }
+        } catch (error) {
+            console.error("API 連線失敗:", error);
+        }
+    }
+
+    alert("保存作業完成！");
+    // location.reload(); // 視需求決定是否刷新
+});
+// #endregion
+
+//#region 人員視窗查詢
 function fetchUserData() {
     const searchInput = document.getElementById('modalSearchUser');
     const userKeyword = searchInput ? searchInput.value : "";
@@ -110,6 +204,7 @@ function selectUser(EmplNo) {
     const modalInstance = bootstrap.Modal.getInstance(modalElement);
     modalInstance.hide();
 }
+//#endregion
 
 //日期元件
 document.addEventListener('DOMContentLoaded', function () {

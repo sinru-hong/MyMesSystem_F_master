@@ -1,0 +1,17 @@
+﻿/* 自定義淺藍色上傳按鈕 */
+.btn-info {
+    background-color: #5bc0de !important; /* 典型的淺藍色 */
+    border-color: #46b8da !important;
+    color: white !important;
+}
+
+/* 讓操作欄位寬度足夠容納三個文字按鈕 */
+.text-nowrap {
+    white-space: nowrap;
+}
+
+/* 微調按鈕文字大小讓整體比例更協調 */
+.btn-sm {
+    padding: 2px 8px !important;
+    font-size: 12px !important;
+}
