@@ -150,6 +150,16 @@ document.getElementById('btnSave').addEventListener('click', async function () {
                 // 移除操作按鈕 (例如取消按鈕)
                 const actionCell = row.cells[1];
                 actionCell.innerHTML = '<span class="badge bg-success">已保存</span>';
+
+                actionCell.querySelector('.btn-save-row').onclick = async (e) => {
+                    e.stopPropagation();
+                    const newRemark = remarkCell.querySelector('input').value;
+                    const id = row.getAttribute('data-id'); // ⚠️ 必須確保 queryFiles 有設定這個屬性
+                    const modifier = document.getElementsByName('creator')[0].value || "admin";
+
+                    await submitRowUpdate(id, newRemark, modifier, row, originalActionHtml);
+                };
+
             } else {
                 const errorData = await response.json();
                 alert(`保存失敗: ${errorData.message}`);
@@ -307,7 +317,6 @@ function resetEditButton() {
 // #endregion
 
 // #region 刪除
-// #region 刪除邏輯
 let isDeleteMode = false;
 
 document.getElementById('btnDelete').addEventListener('click', function () {
@@ -373,6 +382,27 @@ function resetDeleteButton() {
     isDeleteMode = false;
 }
 // #endregion
+
+// #region 導出
+document.getElementById('btnExport').addEventListener('click', function () {
+    // 取得目前的查詢條件，確保匯出的內容跟畫面上看到的一樣
+    const createUser = document.getElementsByName('creator')[0].value;
+    const createDate = document.getElementsByName('createTime')[0].value;
+
+    // 💡 提示使用者
+    console.log("正在準備匯出資料...");
+
+    // 直接導向 API 進行下載
+    const url = `${BACKEND_URL}/api/MasterData/ExportToExcel?creator=${encodeURIComponent(createUser)}&date=${encodeURIComponent(createDate)}`;
+
+    // 使用隱藏標籤下載，避免頁面跳轉
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'ExportData.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
 // #endregion
 
 //#region 人員視窗查詢
