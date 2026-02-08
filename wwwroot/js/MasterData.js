@@ -57,7 +57,10 @@ document.getElementById('btnAdd').addEventListener('click', function () {
         </td>
         <td><input type="text" class="form-control form-control-sm" name="newFilePath" placeholder="請上傳檔案..."></td>
         <td><input type="text" class="form-control form-control-sm" name="newRemark"></td>
-        <td><input type="text" class="form-control form-control-sm" name="newCreator" value="${document.getElementById('inputCreator').value}" readonly></td>
+        <td>
+            <input type="text" class="form-control form-control-sm bg-light"
+                   name="newCreator" value="${currentLoginUser}" readonly>
+        </td>
         <td><input type="text" class="form-control form-control-sm" name="newCreateTime" value="${document.getElementById('inputCreateTime').value}" readonly></td>
         <td>-</td>
         <td>-</td>
@@ -74,60 +77,62 @@ document.getElementById('btnAdd').addEventListener('click', function () {
     });
     newRow.querySelector('.cancel-new-row').addEventListener('click', () => newRow.remove());
 });
-// #endgion
+// #endregion
 
 // #region 保存
 document.getElementById('btnSave').addEventListener('click', async function () {
-    // 1. 抓取所有標記為新增的行
+    // 1. 抓取所有標記為新增的行 (你在 btnAdd 邏輯中應該有加上這個 class)
     const newRows = document.querySelectorAll('#dataTableBody tr.is-new');
 
     if (newRows.length === 0) {
-        alert("目前沒有需要保存的新增資料。");
+        alert("目前沒有需要保存的新增行。");
         return;
     }
 
-    // 這裡我們示範「逐行保存」，若要一次送多筆則需要更複雜的後端接法
-    for (let row of newRows) {
-        const fileInput = row.querySelector('.row-file-input');
-        const filePath = row.querySelector('[name="newFilePath"]').value;
-        const remark = row.querySelector('[name="newRemark"]').value;
-        const creator = row.querySelector('[name="newCreator"]').value;
-
-        if (!filePath) {
-            alert("請確保所有新增行皆已上傳檔案或填寫路徑。");
-            return;
-        }
-
-        // 2. 封裝 FormData
-        const formData = new FormData();
-        if (fileInput.files.length > 0) {
-            formData.append('file', fileInput.files[0]);
-        }
-        formData.append('remark', remark);
-        formData.append('creator', creator);
-
+    // 2. 遍歷每一行進行保存
+    for (const row of newRows) {
         try {
-            // 3. 呼叫 API
+            const formData = new FormData();
+            const fileInput = row.querySelector('.row-file-input');
+            const remark = row.querySelector('[name="newRemark"]').value;
+            const filePathValue = row.querySelector('[name="newFilePath"]').value;
+            const creator = row.querySelector('[name="newCreator"]').value;
+            // 💡 檢查是否有檔案，並將資料放入 FormData
+            if (fileInput && fileInput.files.length > 0) {
+                formData.append('file', fileInput.files[0]);
+            }
+            formData.append('remark', remark || "");
+            formData.append('filePath', filePathValue || "");
+            formData.append('creator', creator);
+
+            // 3. 呼叫後端 API
             const response = await fetch(`${BACKEND_URL}/api/MasterData/SaveMasterData`, {
                 method: 'POST',
                 body: formData
             });
 
+            // 4. 解析回應
             if (response.ok) {
-                console.log("保存成功一筆");
-                row.classList.remove('is-new', 'table-warning'); // 移除新增標記與顏色
-                // 可以選擇將 input 轉為純文字，或直接刷新
+                const result = await response.json();
+                console.log("保存成功：", result.message);
+
+                // 💡 成功後移除黃色背景與新增標記，使其看起來像正式資料
+                row.classList.remove('is-new', 'table-warning');
+
+                // 將 input 轉為純文字 (選用，或是直接 reload)
+                row.querySelector('[name="newRemark"]').parentElement.innerText = remark;
             } else {
-                const err = await response.json();
-                alert("保存發生錯誤: " + err.message);
+                const errorData = await response.json();
+                alert(`保存失敗: ${errorData.message}`);
             }
+
         } catch (error) {
-            console.error("API 連線失敗:", error);
+            console.error("處理該行時發生連線錯誤:", error);
+            alert("伺服器連線失敗，請檢查網路或後端狀態。");
         }
     }
 
-    alert("保存作業完成！");
-    // location.reload(); // 視需求決定是否刷新
+    alert("保存作業執行完畢！");
 });
 // #endregion
 

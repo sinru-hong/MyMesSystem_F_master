@@ -63,8 +63,11 @@ namespace MyMesSystem_F.Controllers
                         ViewBag.SavedUsername = emplNo;
                         return View("Login");
                     }
-
-                    return RedirectToAction("Index");
+                    else
+                    {
+                        HttpContext.Session.SetString("UserEmplNo", emplNo);
+                        return RedirectToAction("Index");
+                    }
                 }
                 ////處理環境或安全配置錯誤（如 IIS 攔截）
                 //else if (response.StatusCode == System.Net.httptatusCode.Unauthorized)
