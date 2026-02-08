@@ -81,7 +81,6 @@ document.getElementById('btnAdd').addEventListener('click', function () {
 
 // #region 保存
 document.getElementById('btnSave').addEventListener('click', async function () {
-    // 1. 抓取所有標記為新增的行 (你在 btnAdd 邏輯中應該有加上這個 class)
     const newRows = document.querySelectorAll('#dataTableBody tr.is-new');
 
     if (newRows.length === 0) {
@@ -89,7 +88,10 @@ document.getElementById('btnSave').addEventListener('click', async function () {
         return;
     }
 
-    // 2. 遍歷每一行進行保存
+    // 禁用按鈕防止重複點擊
+    const btnSave = this;
+    btnSave.disabled = true;
+
     for (const row of newRows) {
         try {
             const formData = new FormData();
@@ -97,7 +99,7 @@ document.getElementById('btnSave').addEventListener('click', async function () {
             const remark = row.querySelector('[name="newRemark"]').value;
             const filePathValue = row.querySelector('[name="newFilePath"]').value;
             const creator = row.querySelector('[name="newCreator"]').value;
-            // 💡 檢查是否有檔案，並將資料放入 FormData
+
             if (fileInput && fileInput.files.length > 0) {
                 formData.append('file', fileInput.files[0]);
             }
@@ -105,33 +107,35 @@ document.getElementById('btnSave').addEventListener('click', async function () {
             formData.append('filePath', filePathValue || "");
             formData.append('creator', creator);
 
-            // 3. 呼叫後端 API
             const response = await fetch(`${BACKEND_URL}/api/MasterData/SaveMasterData`, {
                 method: 'POST',
                 body: formData
             });
 
-            // 4. 解析回應
             if (response.ok) {
-                const result = await response.json();
-                console.log("保存成功：", result.message);
-
-                // 💡 成功後移除黃色背景與新增標記，使其看起來像正式資料
+                // 💡 保存成功後的 UI 處理
                 row.classList.remove('is-new', 'table-warning');
 
-                // 將 input 轉為純文字 (選用，或是直接 reload)
-                row.querySelector('[name="newRemark"]').parentElement.innerText = remark;
+                // 將輸入框內容轉為純文字，鎖定資料
+                row.querySelectorAll('input').forEach(input => {
+                    const val = input.value;
+                    const cell = input.parentElement;
+                    cell.innerText = val;
+                });
+
+                // 移除操作按鈕 (例如取消按鈕)
+                const actionCell = row.cells[1];
+                actionCell.innerHTML = '<span class="badge bg-success">已保存</span>';
             } else {
                 const errorData = await response.json();
                 alert(`保存失敗: ${errorData.message}`);
             }
-
         } catch (error) {
-            console.error("處理該行時發生連線錯誤:", error);
-            alert("伺服器連線失敗，請檢查網路或後端狀態。");
+            console.error("保存出錯:", error);
         }
     }
 
+    btnSave.disabled = false;
     alert("保存作業執行完畢！");
 });
 // #endregion
