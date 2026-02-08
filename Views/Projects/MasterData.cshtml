@@ -103,7 +103,6 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @section Scripts {
     <script>
-        // 💡 從 Session 讀取工號，如果讀不到就給空字串
         const currentLoginUser = "@HttpContextAccessor.HttpContext?.Session.GetString("UserEmplNo")" || "未知用戶";
         console.log("當前操作者工號:", currentLoginUser);
     </script>

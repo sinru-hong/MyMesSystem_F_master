@@ -7,7 +7,6 @@ if (btnQuery) {
 }
 
 async function queryFiles() {
-    // 💡 取得畫面上輸入的查詢條件
     const createUser = document.getElementsByName('creator')[0].value;
     const createDate = document.getElementsByName('createTime')[0].value;
 
@@ -17,12 +16,11 @@ async function queryFiles() {
 
         const data = await response.json();
         const tbody = document.getElementById('dataTableBody');
-        tbody.innerHTML = ''; // 清空舊內容
+        tbody.innerHTML = '';
 
         data.forEach((item, index) => {
             const tr = document.createElement('tr');
-            tr.setAttribute('data-id', item.id); // 💡 關鍵：存入資料庫 ID
-            // 💡 這裡對應後端傳回的 JSON 屬性名稱 (通常首字母會變小寫)
+            tr.setAttribute('data-id', item.id);
             tr.innerHTML = `
                 <td>${index + 1}</td>
                 <td>
@@ -48,16 +46,14 @@ async function queryFiles() {
 function downloadFile(filePath) {
     const url = `${BACKEND_URL}/api/MasterData/DownloadFile?fileName=${encodeURIComponent(filePath)}`;
 
-    // 建立一個看不見的 a 標籤
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', filePath); // 提示瀏覽器下載
+    link.setAttribute('download', filePath);
     link.style.display = 'none';
 
     document.body.appendChild(link);
     link.click();
 
-    // 💡 關鍵：下載觸發後立即移除，避免產生幽靈元素
     document.body.removeChild(link);
 }
 // #endregion
@@ -67,7 +63,6 @@ document.getElementById('btnAdd').addEventListener('click', function () {
     const tbody = document.getElementById('dataTableBody');
     const newRow = document.createElement('tr');
 
-    // 💡 關鍵：加上 'is-new' class 方便保存按鈕搜尋
     newRow.className = 'table-warning is-new';
 
     const nextIndex = tbody.rows.length + 1;
@@ -92,7 +87,6 @@ document.getElementById('btnAdd').addEventListener('click', function () {
 
     tbody.insertBefore(newRow, tbody.firstChild);
 
-    // 綁定上傳與取消按鈕邏輯 (保持不變)
     const fileInput = newRow.querySelector('.row-file-input');
     const pathInput = newRow.querySelector('[name="newFilePath"]');
     newRow.querySelector('.upload-btn').addEventListener('click', () => fileInput.click());
@@ -112,7 +106,6 @@ document.getElementById('btnSave').addEventListener('click', async function () {
         return;
     }
 
-    // 禁用按鈕防止重複點擊
     const btnSave = this;
     btnSave.disabled = true;
 
@@ -137,24 +130,21 @@ document.getElementById('btnSave').addEventListener('click', async function () {
             });
 
             if (response.ok) {
-                // 💡 保存成功後的 UI 處理
                 row.classList.remove('is-new', 'table-warning');
 
-                // 將輸入框內容轉為純文字，鎖定資料
                 row.querySelectorAll('input').forEach(input => {
                     const val = input.value;
                     const cell = input.parentElement;
                     cell.innerText = val;
                 });
 
-                // 移除操作按鈕 (例如取消按鈕)
                 const actionCell = row.cells[1];
                 actionCell.innerHTML = '<span class="badge bg-success">已保存</span>';
 
                 actionCell.querySelector('.btn-save-row').onclick = async (e) => {
                     e.stopPropagation();
                     const newRemark = remarkCell.querySelector('input').value;
-                    const id = row.getAttribute('data-id'); // ⚠️ 必須確保 queryFiles 有設定這個屬性
+                    const id = row.getAttribute('data-id');
                     const modifier = document.getElementsByName('creator')[0].value || "admin";
 
                     await submitRowUpdate(id, newRemark, modifier, row, originalActionHtml);
@@ -178,7 +168,7 @@ document.getElementById('btnSave').addEventListener('click', async function () {
 let isEditMode = false;
 
 document.getElementById('btnEdit').addEventListener('click', function () {
-    const table = document.getElementById('dataTableBody'); // 💡 請確認 HTML 裡 table 的 ID
+    const table = document.getElementById('dataTableBody');
 
     if (!table) {
         console.error("錯誤：找不到 id='dataTableBody' 的表格元素，請檢查 HTML。");
@@ -198,22 +188,13 @@ document.getElementById('btnEdit').addEventListener('click', function () {
     }
 });
 
-// 💡 新增：監聽表格內部的點擊動作
 document.getElementById('dataTableBody').addEventListener('click', function (e) {
-    // 如果現在不是修改模式，直接結束不處理
     if (!isEditMode) return;
-
-    // 找到被點擊的那個 <tr> (行)
     const row = e.target.closest('tr');
-
-    // 如果沒點到行，或是該行已經在編輯中，或是那是剛新增還沒存檔的行，就不處理
     if (!row || row.classList.contains('editing') || row.classList.contains('is-new')) return;
-
     console.log("偵測到點擊行，進入編輯模式");
     enterRowEditMode(row);
 });
-
-// 💡 執行進入編輯模式的函數
 function enterRowEditMode(row) {
     const existingEditingRow = document.querySelector('#dataTableBody tr.editing');
     if (existingEditingRow) {
@@ -223,43 +204,36 @@ function enterRowEditMode(row) {
 
     row.classList.add('editing', 'table-info');
 
-    // 假設備註在第 4 欄 (Index 從 0 開始算，所以是 row.cells[3])
-    // 請根據您實際的欄位順序調整索引值
     const remarkCell = row.cells[3];
     const originalRemark = remarkCell.innerText;
 
-    // 將文字替換為輸入框
     remarkCell.innerHTML = `<input type="text" class="form-control form-control-sm" value="${originalRemark}">`;
 
-    // 修改「操作」欄位的按鈕 (假設在第 2 欄，也就是 row.cells[1])
     const actionCell = row.cells[1];
-    const originalActionHtml = actionCell.innerHTML; // 備份原本的「下載」按鈕
+    const originalActionHtml = actionCell.innerHTML; 
 
     actionCell.innerHTML = `
         <button class="btn btn-xs btn-success btn-save-row">保存</button>
         <button class="btn btn-xs btn-secondary btn-cancel-row">取消</button>
     `;
 
-    // 綁定「取消」按鈕邏輯
     actionCell.querySelector('.btn-cancel-row').onclick = (e) => {
-        e.stopPropagation(); // 防止再次觸發行點擊
+        e.stopPropagation(); 
         remarkCell.innerText = originalRemark;
         actionCell.innerHTML = originalActionHtml;
         row.classList.remove('editing', 'table-info');
     };
 
-    // 綁定「保存」按鈕邏輯
     actionCell.querySelector('.btn-save-row').onclick = async (e) => {
         e.stopPropagation();
         const newRemark = remarkCell.querySelector('input').value;
-        const id = row.getAttribute('data-id'); // ⚠️ 必須確保 queryFiles 有設定這個屬性
+        const id = row.getAttribute('data-id');
         const modifier = document.getElementsByName('creator')[0].value || "admin";
 
         await submitRowUpdate(id, newRemark, modifier, row, originalActionHtml);
     };
 }
 
-// 💡 執行更新 API 的函式
 async function submitRowUpdate(id, remark, modifier, row, originalHtml) {
     const formData = new FormData();
     formData.append('id', id);
@@ -275,19 +249,10 @@ async function submitRowUpdate(id, remark, modifier, row, originalHtml) {
         });
 
         if (response.ok) {
-            // const result = await response.json(); // 如果後端有回傳 JSON 才需要這行
             alert("修改成功！");
-
-            // 1. 將輸入框變回純文字 (這部分保留，提供即時視覺回饋)
             row.cells[3].innerText = remark;
-
-            // 2. 將按鈕變回原本的「下載」按鈕
             row.cells[1].innerHTML = originalHtml;
-
-            // 3. 移除編輯狀態的樣式
             row.classList.remove('editing', 'table-info');
-
-            // 💡 關鍵：自動觸發查詢，刷新整張表格的資料 (包含修改時間、修改人)
             console.log("正在重新整理資料清單...");
             queryFiles();
         } else {
@@ -327,14 +292,13 @@ document.getElementById('btnDelete').addEventListener('click', function () {
         // 切換按鈕狀態
         this.classList.replace('btn-info', 'btn-danger');
         this.innerHTML = '<i class="bi bi-x-circle"></i> 取消刪除模式';
-        table.classList.add('table-hover-delete'); // 增加紅色選取效果的 CSS
+        table.classList.add('table-hover-delete'); 
         alert("刪除模式已開啟，請點選您想刪除的資料行。");
     } else {
         resetDeleteButton();
     }
 });
 
-// 監聽表格點擊 (重複利用事件委派)
 document.getElementById('dataTableBody').addEventListener('click', async function (e) {
     if (!isDeleteMode) return;
 
@@ -363,7 +327,7 @@ async function executeDelete(id, row) {
 
         if (response.ok) {
             alert("刪除成功！");
-            queryFiles(); // 💡 重新查詢，被標記為 IsDeleted=1 的資料將會消失
+            queryFiles(); 
         } else {
             alert("刪除失敗");
         }
@@ -385,17 +349,10 @@ function resetDeleteButton() {
 
 // #region 導出
 document.getElementById('btnExport').addEventListener('click', function () {
-    // 取得目前的查詢條件，確保匯出的內容跟畫面上看到的一樣
     const createUser = document.getElementsByName('creator')[0].value;
     const createDate = document.getElementsByName('createTime')[0].value;
-
-    // 💡 提示使用者
     console.log("正在準備匯出資料...");
-
-    // 直接導向 API 進行下載
     const url = `${BACKEND_URL}/api/MasterData/ExportToExcel?creator=${encodeURIComponent(createUser)}&date=${encodeURIComponent(createDate)}`;
-
-    // 使用隱藏標籤下載，避免頁面跳轉
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute('download', 'ExportData.csv');
@@ -407,16 +364,12 @@ document.getElementById('btnExport').addEventListener('click', function () {
 
 // #region 導入
 document.getElementById('btnImport').addEventListener('click', function () {
-    // 1. 取得當前登入人員工號 (假設你的 HTML 中有個 name 為 'creator' 的 input)
-    // 如果你的登入人員工號儲存在不同的 ID 或變數，請對應修改這裡
     const currentEmplno = currentLoginUser;
 
     if (!currentEmplno) {
         alert("無法取得操作人員資訊，請重新登入。");
         return;
     }
-
-    // 2. 建立隱藏的 file input
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = '.xlsx, .xls';
@@ -424,14 +377,11 @@ document.getElementById('btnImport').addEventListener('click', function () {
     fileInput.onchange = async e => {
         const file = e.target.files[0];
         if (!file) return;
-
-        // 3. 封裝資料
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('creator', currentEmplno); // 💡 將 Emplno 作為 creator 傳入
+        formData.append('creator', currentEmplno); 
 
         try {
-            // 顯示載入中狀態 (選用)
             console.log(`人員 ${currentEmplno} 正在導入檔案...`);
 
             const response = await fetch(`${BACKEND_URL}/api/MasterData/ImportExcel`, {
@@ -443,7 +393,7 @@ document.getElementById('btnImport').addEventListener('click', function () {
 
             if (response.ok) {
                 alert(`導入成功！${result.message}`);
-                queryFiles(); // 重新整理列表
+                queryFiles(); 
             } else {
                 alert(`導入失敗：${result.message}`);
             }
@@ -463,13 +413,9 @@ const loadingOverlay = document.getElementById('loadingOverlay');
 
 if (btnRefresh) {
     btnRefresh.addEventListener('click', function () {
-        // 1. 顯示遮罩並設定為 flex 排版使其置中
         if (loadingOverlay) {
             loadingOverlay.style.display = 'flex';
         }
-
-        // 2. 執行全頁刷新
-        // 稍微延遲 100ms 讓使用者能看到動畫啟動，增加視覺體感
         setTimeout(() => {
             location.reload();
         }, 100);
@@ -488,14 +434,11 @@ function fetchUserData() {
             return response.json();
         })
         .then(data => {
-            // 如果後端回傳的是物件 { message: "..." }
             console.log("後端回應：", data);
 
             const tbody = document.getElementById('userModalTableBody');
             if (!tbody) return;
             tbody.innerHTML = '';
-
-            // 判斷 data 是不是陣列 (如果是連線成功的訊息物件就印出訊息)
             if (!Array.isArray(data)) {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `<td colspan="3">${data.message || '格式非陣列'}</td>`;
@@ -505,9 +448,8 @@ function fetchUserData() {
 
             data.forEach((item, index) => {
                 const tr = document.createElement('tr');
-                tr.style.cursor = "pointer"; // 讓滑鼠移上去顯示手型
+                tr.style.cursor = "pointer"; 
 
-                // 💡 點擊事件：選擇使用者
                 tr.onclick = function () {
                     selectUser(item.EmplNo, item.EmplNo);
                 };
@@ -522,7 +464,6 @@ function fetchUserData() {
         })
         .catch(err => console.error("連線失敗：", err));
 }
-// 當 Modal 顯示時，可以預載一些資料 (測試用)
 document.getElementById('userSelectModal').addEventListener('show.bs.modal', function () {
     // 模擬資料
     //const tbody = document.getElementById('userModalTableBody');
@@ -541,11 +482,9 @@ document.getElementById('userSelectModal').addEventListener('show.bs.modal', fun
     fetchUserData();
 });
 
-// 選取人員並填回輸入框
 function selectUser(EmplNo) {
     document.getElementById('inputCreator').value = EmplNo;
 
-    // 關閉視窗 (使用 Bootstrap 的方法)
     const modalElement = document.getElementById('userSelectModal');
     const modalInstance = bootstrap.Modal.getInstance(modalElement);
     modalInstance.hide();
@@ -554,21 +493,17 @@ function selectUser(EmplNo) {
 
 //日期元件
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. 初始化日期元件 (白底黑字樣式)
     flatpickr("#inputCreateTime", {
         locale: "zh_tw",
         dateFormat: "Y-m-d",
-        allowInput: false, // 禁止手動輸入
-        // 預設就是白底，若需要更黑的字體可透過 CSS 調整
+        allowInput: false, 
     });
 
-    // 2. 監聽 Modal 顯示時自動載入初始資料 (可選)
     const userModal = document.getElementById('userSelectModal');
     userModal.addEventListener('show.bs.modal', function () {
-        fetchUserData(); // 預設查出全部或前幾筆
+        fetchUserData(); 
     });
 
-    // 3. 監聽搜尋框 Enter 鍵
     document.getElementById('modalSearchUser').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') fetchUserData();
     });

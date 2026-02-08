@@ -39,10 +39,8 @@ function fetchData() {
     //#region 弱型別回傳
     fetch(`${BACKEND_URL}/api/Product/complex`)
         .then(response => {
-            // 先印出狀態碼看看，如果是 500 代表後端 C# 報錯了
             console.log("HTTP 狀態碼:", response.status);
 
-            // 檢查回傳內容是否為空
             if (response.status === 204) {
                 console.warn("後端回傳成功，但沒有任何資料 (204 No Content)");
                 return [];
@@ -52,13 +50,10 @@ function fetchData() {
         .then(data => {
             console.log("成功抓取資料:", data);
             data.forEach(item => {
-                // 注意：Hashtable 序列化後的 Key 通常會維持 SQL 的大小寫
-                // 或是根據你的 JSON 設定變動，建議先 console.log(item) 檢查
                 const list = document.getElementById('productList');
-                list.innerHTML = ''; // 先清空舊內容
+                list.innerHTML = '';
 
                 data.forEach(item => {
-                    // 這裡的 item.productName 必須對應後端 JSON 的 Key (通常是小寫開頭)
                     const li = document.createElement('li');
                     li.className = 'list-group-item';
                     li.textContent = `產品：${item.ProductName} (編號：${item.ProductID}) - 價格：${item.Price}`;

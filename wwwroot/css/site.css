@@ -1,84 +1,88 @@
 ﻿html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb; /* 焦點外框 */
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
-/* 設定滑鼠移過去時的背景顏色 */
 .hover-sidebar .nav-link:hover {
-    background-color: rgba(0, 0, 0, 0.05); /* 淡淡的深灰色 (使用透明度) */
-    color: #000 !important; /* 確保文字顏色清晰 */
-    transition: background-color 0.3s ease; /* 增加平滑過渡感 */
+    background-color: rgba(0, 0, 0, 0.05); /* 背景變色 */
+    color: #000 !important; /* 文字顏色 */
+    transition: background-color 0.3s ease; /* 平滑過渡 */
 }
 
-/* 如果你希望選單項目的底線在 hover 時不要消失，可以維持 border-bottom */
 .hover-sidebar .nav-link {
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease; /* 平滑過渡 */
 }
 
-/* 1. 側邊欄初始狀態：縮得很窄 */
+/* 側邊欄容器 */
 .hover-sidebar {
-    position: fixed;
+    position: fixed; /* 固定定位 */
     top: 56px;
     left: 0;
     bottom: 0;
-    width: 10px;
+    width: 10px; /* 初始窄寬度 */
     overflow-x: hidden;
-    transition: width 0.3s ease;
-    z-index: 2000; /* 💡 將層級調得更高，確保蓋過所有內容 */
-    background-color: #f8f9fa; /* 💡 確保有背景色，否則文字會透出來 */
+    transition: width 0.3s ease; /* 展開動畫 */
+    z-index: 2000; /* 頂層層級 */
+    background-color: #f8f9fa; /* 背景色 */
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    height: 100vh; /* 全高 */
+    position: sticky; /* 滾動固定 */
+    top: 0;
 }
 
-/* 2. 初始隱藏文字內容，避免文字擠在一起 */
+/* 內容區塊 */
 .sidebar-content {
-    width: 200px; /* 這是展開後的內容寬度 */
-    opacity: 0;
+    padding-top: 0 !important;
+    width: 260px; /* 內容寬度 */
+    opacity: 0; /* 初始隱藏 */
     transition: opacity 0.2s;
-    white-space: nowrap; /* 防止換行 */
+    white-space: normal; /* 文字換行 */
 }
 
-/* 3. 當滑鼠移入導覽欄時：展開並顯示內容 */
+/* 懸浮狀態 */
 .hover-sidebar:hover {
-    width: 200px; /* 展開寬度 */
-    box-shadow: 4px 0 10px rgba(0,0,0,0.1); /* 增加陰影更有層次感 */
+    width: 260px; /* 展開寬度 */
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1); /* 右側陰影 */
 }
 
     .hover-sidebar:hover .sidebar-content {
-        opacity: 1; /* 顯示文字 */
+        opacity: 1; /* 顯示內容 */
     }
 
-/* 4. 主內容區調整：因為選單是 fixed，不佔空間，所以這裡給一點左邊距即可 */
+/* 主內容區 */
 .main-content {
-    position: relative; /* 💡 建立自己的堆疊上下文 */
-    z-index: 1; /* 💡 確保低於選單的 2000 */
+    position: relative;
+    z-index: 1; /* 低於側邊欄 */
     padding-left: 20px;
-    transition: margin-left 0.3s ease; /* 💡 如果您希望內容被「推開」而不是被「覆蓋」 */
+    transition: margin-left 0.3s ease; /* 位移過渡 */
 }
 
 .row.m-0 {
     display: flex;
-    flex-wrap: nowrap; /* 💡 確保選單與主內容始終在同一列 */
+    flex-wrap: nowrap; /* 禁止換列 */
 }
 
 .cursor-pointer:hover {
     background-color: #e9ecef !important;
-    transform: translateY(-1px);
+    transform: translateY(-1px); /* 微幅上移 */
     transition: 0.2s;
 }

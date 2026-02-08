@@ -1,15 +1,15 @@
 ﻿/* 頭像懸停效果 */
 .profile-image-container img {
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease; /* 平滑變換 */
 }
 
     .profile-image-container img:hover {
         transform: scale(1.05); /* 輕微放大 */
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* 懸浮陰影 */
     }
 
-/* 針對履歷文字的字體微調 */
+/* 履歷字體微調 */
 .font-monospace {
-    color: #333;
-    font-size: 1.1rem;
+    color: #333; /* 深灰色 */
+    font-size: 1.1rem; /* 字體大小 */
 }

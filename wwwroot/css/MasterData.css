@@ -1,51 +1,52 @@
-﻿/* 自定義淺藍色上傳按鈕 */
+﻿/* 淺藍上傳按鈕 */
 .btn-info {
-    background-color: #5bc0de !important; /* 典型的淺藍色 */
-    border-color: #46b8da !important;
-    color: white !important;
+    background-color: #5bc0de !important; /* 淺藍背景 */
+    border-color: #46b8da !important; /* 邊框顏色 */
+    color: white !important; /* 白色文字 */
 }
 
-/* 讓操作欄位寬度足夠容納三個文字按鈕 */
+/* 操作欄位寬度 */
 .text-nowrap {
-    white-space: nowrap;
+    white-space: nowrap; /* 禁止換行 */
 }
 
-/* 微調按鈕文字大小讓整體比例更協調 */
+/* 按鈕比例微調 */
 .btn-sm {
-    padding: 2px 8px !important;
-    font-size: 12px !important;
+    padding: 2px 8px !important; /* 內距調整 */
+    font-size: 12px !important; /* 字體大小 */
 }
 
 .table-hover-edit tbody tr:not(.is-new):hover {
-    cursor: pointer;
-    background-color: rgba(0, 123, 255, 0.1) !important;
+    cursor: pointer; /* 手指指標 */
+    background-color: rgba(0, 123, 255, 0.1) !important; /* 淡藍背景 */
 }
 
 .btn-xs {
-    padding: 1px 5px;
-    font-size: 12px;
+    padding: 1px 5px; /* 極小內距 */
+    font-size: 12px; /* 字體大小 */
 }
 
-/* 刪除模式下的滑鼠樣式 */
+/* 刪除模式樣式 */
 .table-hover-delete tr:hover {
-    cursor: pointer;
-    background-color: rgba(220, 53, 69, 0.1) !important; /* 淡紅色 */
-    border: 2px solid #dc3545;
+    cursor: pointer; /* 手指指標 */
+    background-color: rgba(220, 53, 69, 0.1) !important; /* 淡紅背景 */
+    border: 2px solid #dc3545; /* 紅色邊框 */
 }
 
-/* 定義旋轉動畫 */
+/* 旋轉動畫 */
 @keyframes spin {
     from {
         transform: rotate(0deg);
     }
-
+    /* 起始角度 */
     to {
         transform: rotate(360deg);
     }
+    /* 結束角度 */
 }
 
-/* 建立旋轉類別 */
+/* 旋轉類別 */
 .fa-spin {
-    animation: spin 1s linear infinite;
-    display: inline-block; /* 確保動畫能正常運作 */
+    animation: spin 1s linear infinite; /* 無限循環 */
+    display: inline-block; /* 確保動畫生效 */
 }
