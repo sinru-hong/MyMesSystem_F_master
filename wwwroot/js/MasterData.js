@@ -6,35 +6,58 @@ if (btnQuery) {
     btnQuery.addEventListener('click', queryFiles);
 }
 
-function queryFiles() {
+async function queryFiles() {
+    // 💡 取得畫面上輸入的查詢條件
     const createUser = document.getElementsByName('creator')[0].value;
     const createDate = document.getElementsByName('createTime')[0].value;
 
-    alert("已點擊查詢");
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/MasterData/GetUploadFiles?creator=${createUser}&date=${createDate}`);
+        if (!response.ok) throw new Error("網路回應不正確");
 
-    // 呼叫後端 API
-    //fetch(`/Project/GetFileLogs?user=${createUser}&date=${createDate}`)
-    //    .then(response => response.json())
-    //    .then(data => {
-    //        const tbody = document.getElementById('dataTableBody');
-    //        tbody.innerHTML = ''; // 清空舊內容 
+        const data = await response.json();
+        const tbody = document.getElementById('dataTableBody');
+        tbody.innerHTML = ''; // 清空舊內容
 
-    //        data.forEach((item, index) => {
-    //            const tr = document.createElement('tr');
-    //            tr.innerHTML = `
-    //                <td>${index + 1}</td>
-    //                <td><button class="btn btn-sm btn-outline-primary">下載</button></td>
-    //                <td>${item.FilePath}</td>
-    //                <td>${item.Remark || ''}</td>
-    //                <td>${item.CreateUser}</td>
-    //                <td>${item.CreateDate}</td>
-    //                <td>${item.UpdateUser || ''}</td>
-    //                <td>${item.UpdateDate || ''}</td>
-    //            `;
-    //            tbody.appendChild(tr);
-    //        });
-    //    })
-    //    .catch(err => console.error("查詢失敗:", err));
+        data.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            // 💡 這裡對應後端傳回的 JSON 屬性名稱 (通常首字母會變小寫)
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="downloadFile('${item.filePath}')">下載</button>
+                </td>
+                <td>${item.filePath}</td>
+                <td>${item.remark || ''}</td>
+                <td>${item.creator}</td>
+                <td>${new Date(item.createTime).toLocaleString()}</td>
+                <td>${item.lastModifier || ''}</td>
+                <td>${item.lastModifyTime ? new Date(item.lastModifyTime).toLocaleString() : ''}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (err) {
+        console.error("查詢失敗:", err);
+        alert("查詢發生錯誤，請查看控制台");
+    }
+}
+// #endregion
+
+// #region 下載檔案
+function downloadFile(fileName) {
+    const url = `${BACKEND_URL}/api/MasterData/DownloadFile?fileName=${encodeURIComponent(fileName)}`;
+
+    // 建立一個看不見的 a 標籤
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName); // 提示瀏覽器下載
+    link.style.display = 'none';
+
+    document.body.appendChild(link);
+    link.click();
+
+    // 💡 關鍵：下載觸發後立即移除，避免產生幽靈元素
+    document.body.removeChild(link);
 }
 // #endregion
 
