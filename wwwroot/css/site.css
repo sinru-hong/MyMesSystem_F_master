@@ -1,4 +1,4 @@
-html {
+ï»¿html {
   font-size: 14px;
 }
 
@@ -21,50 +21,64 @@ body {
   margin-bottom: 60px;
 }
 
-/* ³]©w·Æ¹«²¾¹L¥h®Éªº­I´ºÃC¦â */
+/* è¨­å®šæ»‘é¼ ç§»éå»æ™‚çš„èƒŒæ™¯é¡è‰² */
 .hover-sidebar .nav-link:hover {
-    background-color: rgba(0, 0, 0, 0.05); /* ²H²Hªº²`¦Ç¦â (¨Ï¥Î³z©ú«×) */
-    color: #000 !important; /* ½T«O¤å¦rÃC¦â²M´· */
-    transition: background-color 0.3s ease; /* ¼W¥[¥­·Æ¹L´ç·P */
+    background-color: rgba(0, 0, 0, 0.05); /* æ·¡æ·¡çš„æ·±ç°è‰² (ä½¿ç”¨é€æ˜åº¦) */
+    color: #000 !important; /* ç¢ºä¿æ–‡å­—é¡è‰²æ¸…æ™° */
+    transition: background-color 0.3s ease; /* å¢åŠ å¹³æ»‘éæ¸¡æ„Ÿ */
 }
 
-/* ¦pªG§A§Æ±æ¿ï³æ¶µ¥Øªº©³½u¦b hover ®É¤£­n®ø¥¢¡A¥i¥Hºû«ù border-bottom */
+/* å¦‚æœä½ å¸Œæœ›é¸å–®é …ç›®çš„åº•ç·šåœ¨ hover æ™‚ä¸è¦æ¶ˆå¤±ï¼Œå¯ä»¥ç¶­æŒ border-bottom */
 .hover-sidebar .nav-link {
     transition: background-color 0.3s ease;
 }
 
-/* 1. °¼ÃäÄæªì©lª¬ºA¡GÁY±o«Ü¯¶ */
+/* 1. å´é‚Šæ¬„åˆå§‹ç‹€æ…‹ï¼šç¸®å¾—å¾ˆçª„ */
 .hover-sidebar {
-    position: fixed; /* ©T©w¦b³Ì¥ª°¼ */
-    top: 56px; /* Á×¶}¤W¤è¾ÉÄı¦C°ª«× */
+    position: fixed;
+    top: 56px;
     left: 0;
     bottom: 0;
-    width: 10px; /* ªì©l¥u¯d¤@¤p±ø·PÀ³°Ï */
+    width: 10px;
     overflow-x: hidden;
-    transition: width 0.3s ease; /* ¥­·Æ®i¶}®ÄªG */
-    z-index: 1000;
-    background-color: #f8f9fa;
+    transition: width 0.3s ease;
+    z-index: 2000; /* ğŸ’¡ å°‡å±¤ç´šèª¿å¾—æ›´é«˜ï¼Œç¢ºä¿è“‹éæ‰€æœ‰å…§å®¹ */
+    background-color: #f8f9fa; /* ğŸ’¡ ç¢ºä¿æœ‰èƒŒæ™¯è‰²ï¼Œå¦å‰‡æ–‡å­—æœƒé€å‡ºä¾† */
 }
 
-/* 2. ªì©lÁôÂÃ¤å¦r¤º®e¡AÁ×§K¤å¦rÀ½¦b¤@°_ */
+/* 2. åˆå§‹éš±è—æ–‡å­—å…§å®¹ï¼Œé¿å…æ–‡å­—æ“ åœ¨ä¸€èµ· */
 .sidebar-content {
-    width: 200px; /* ³o¬O®i¶}«áªº¤º®e¼e«× */
+    width: 200px; /* é€™æ˜¯å±•é–‹å¾Œçš„å…§å®¹å¯¬åº¦ */
     opacity: 0;
     transition: opacity 0.2s;
-    white-space: nowrap; /* ¨¾¤î´«¦æ */
+    white-space: nowrap; /* é˜²æ­¢æ›è¡Œ */
 }
 
-/* 3. ·í·Æ¹«²¾¤J¾ÉÄıÄæ®É¡G®i¶}¨ÃÅã¥Ü¤º®e */
+/* 3. ç•¶æ»‘é¼ ç§»å…¥å°è¦½æ¬„æ™‚ï¼šå±•é–‹ä¸¦é¡¯ç¤ºå…§å®¹ */
 .hover-sidebar:hover {
-    width: 200px; /* ®i¶}¼e«× */
-    box-shadow: 4px 0 10px rgba(0,0,0,0.1); /* ¼W¥[³±¼v§ó¦³¼h¦¸·P */
+    width: 200px; /* å±•é–‹å¯¬åº¦ */
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1); /* å¢åŠ é™°å½±æ›´æœ‰å±¤æ¬¡æ„Ÿ */
 }
 
     .hover-sidebar:hover .sidebar-content {
-        opacity: 1; /* Åã¥Ü¤å¦r */
+        opacity: 1; /* é¡¯ç¤ºæ–‡å­— */
     }
 
-/* 4. ¥D¤º®e°Ï½Õ¾ã¡G¦]¬°¿ï³æ¬O fixed¡A¤£¦ûªÅ¶¡¡A©Ò¥H³o¸Ìµ¹¤@ÂI¥ªÃä¶Z§Y¥i */
+/* 4. ä¸»å…§å®¹å€èª¿æ•´ï¼šå› ç‚ºé¸å–®æ˜¯ fixedï¼Œä¸ä½”ç©ºé–“ï¼Œæ‰€ä»¥é€™è£¡çµ¦ä¸€é»å·¦é‚Šè·å³å¯ */
 .main-content {
+    position: relative; /* ğŸ’¡ å»ºç«‹è‡ªå·±çš„å †ç–Šä¸Šä¸‹æ–‡ */
+    z-index: 1; /* ğŸ’¡ ç¢ºä¿ä½æ–¼é¸å–®çš„ 2000 */
     padding-left: 20px;
+    transition: margin-left 0.3s ease; /* ğŸ’¡ å¦‚æœæ‚¨å¸Œæœ›å…§å®¹è¢«ã€Œæ¨é–‹ã€è€Œä¸æ˜¯è¢«ã€Œè¦†è“‹ã€ */
+}
+
+.row.m-0 {
+    display: flex;
+    flex-wrap: nowrap; /* ğŸ’¡ ç¢ºä¿é¸å–®èˆ‡ä¸»å…§å®¹å§‹çµ‚åœ¨åŒä¸€åˆ— */
+}
+
+.cursor-pointer:hover {
+    background-color: #e9ecef !important;
+    transform: translateY(-1px);
+    transition: 0.2s;
 }

@@ -457,6 +457,26 @@ document.getElementById('btnImport').addEventListener('click', function () {
 });
 // #endregion
 
+// #region 刷新
+const btnRefresh = document.getElementById('btnRefresh');
+const loadingOverlay = document.getElementById('loadingOverlay');
+
+if (btnRefresh) {
+    btnRefresh.addEventListener('click', function () {
+        // 1. 顯示遮罩並設定為 flex 排版使其置中
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'flex';
+        }
+
+        // 2. 執行全頁刷新
+        // 稍微延遲 100ms 讓使用者能看到動畫啟動，增加視覺體感
+        setTimeout(() => {
+            location.reload();
+        }, 100);
+    });
+}
+// #endregion
+
 //#region 人員視窗查詢
 function fetchUserData() {
     const searchInput = document.getElementById('modalSearchUser');

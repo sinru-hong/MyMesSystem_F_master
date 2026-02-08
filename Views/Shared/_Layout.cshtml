@@ -59,21 +59,6 @@
                                 </ul>
                             </div>
                         </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark py-3 border-bottom d-flex justify-content-between align-items-center"
-                               data-bs-toggle="collapse" href="#techSkills">
-                                <span><i class="bi bi-code-slash me-2"></i>核心技術</span>
-                                <small>▼</small>
-                            </a>
-                            <div class="collapse" id="techSkills">
-                                <ul class="nav flex-column ps-3 bg-white">
-                                    <li class="nav-item"><a class="nav-link text-muted py-2" href="#">前端: JS / CSHTML</a></li>
-                                    <li class="nav-item"><a class="nav-link text-muted py-2" href="#">後端: C++ Service</a></li>
-                                    <li class="nav-item"><a class="nav-link text-muted py-2" href="#">資料庫: MySQL</a></li>
-                                </ul>
-                            </div>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark py-3 border-bottom d-flex justify-content-between align-items-center"
                                data-bs-toggle="collapse" href="#menuMES">
@@ -90,13 +75,6 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link py-3 text-dark border-bottom" href="@Url.Action("FileIntegration", "Projects")">
-                                            <i class="bi bi-file-earmark-excel text-success me-2"></i>
-                                            <strong>導入結合共享資料夾 IO </strong><br />
-                                            <small class="text-muted">Excel 解析與伺服器共享資料夾 IO 操作</small>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
                                         <a class="nav-link py-3 text-dark" href="@Url.Action("ApiMonitor", "Projects")">
                                             <i class="bi bi-cloud-arrow-down text-info me-2"></i>
                                             <strong>跨系統介面 (API)</strong><br />
@@ -110,7 +88,7 @@
                 </div>
             </nav>
 
-            <main class="main-content px-md-4 py-4 w-100">
+            <main class="main-content px-md-4 py-4 flex-grow-1" style="overflow-x: hidden; min-width: 0;">
                 @RenderBody()
             </main>
         </div>

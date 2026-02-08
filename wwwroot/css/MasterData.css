@@ -32,3 +32,20 @@
     background-color: rgba(220, 53, 69, 0.1) !important; /* 淡紅色 */
     border: 2px solid #dc3545;
 }
+
+/* 定義旋轉動畫 */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 建立旋轉類別 */
+.fa-spin {
+    animation: spin 1s linear infinite;
+    display: inline-block; /* 確保動畫能正常運作 */
+}
