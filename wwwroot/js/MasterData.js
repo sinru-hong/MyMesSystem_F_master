@@ -26,7 +26,7 @@ async function queryFiles() {
             tr.innerHTML = `
                 <td>${index + 1}</td>
                 <td>
-                    <button class="btn btn-sm btn-primary" onclick="downloadFile('${item.filePath}')">下載</button>
+                    <button class="btn btn-sm btn-primary" onclick='downloadFile(${JSON.stringify(item.filePath)})'>下載</button>
                 </td>
                 <td>${item.filePath}</td>
                 <td>${item.remark || ''}</td>
@@ -45,13 +45,13 @@ async function queryFiles() {
 // #endregion
 
 // #region 下載檔案
-function downloadFile(fileName) {
-    const url = `${BACKEND_URL}/api/MasterData/DownloadFile?fileName=${encodeURIComponent(fileName)}`;
+function downloadFile(filePath) {
+    const url = `${BACKEND_URL}/api/MasterData/DownloadFile?fileName=${encodeURIComponent(filePath)}`;
 
     // 建立一個看不見的 a 標籤
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', fileName); // 提示瀏覽器下載
+    link.setAttribute('download', filePath); // 提示瀏覽器下載
     link.style.display = 'none';
 
     document.body.appendChild(link);
@@ -402,6 +402,58 @@ document.getElementById('btnExport').addEventListener('click', function () {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+});
+// #endregion
+
+// #region 導入
+document.getElementById('btnImport').addEventListener('click', function () {
+    // 1. 取得當前登入人員工號 (假設你的 HTML 中有個 name 為 'creator' 的 input)
+    // 如果你的登入人員工號儲存在不同的 ID 或變數，請對應修改這裡
+    const currentEmplno = currentLoginUser;
+
+    if (!currentEmplno) {
+        alert("無法取得操作人員資訊，請重新登入。");
+        return;
+    }
+
+    // 2. 建立隱藏的 file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.xlsx, .xls';
+
+    fileInput.onchange = async e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // 3. 封裝資料
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('creator', currentEmplno); // 💡 將 Emplno 作為 creator 傳入
+
+        try {
+            // 顯示載入中狀態 (選用)
+            console.log(`人員 ${currentEmplno} 正在導入檔案...`);
+
+            const response = await fetch(`${BACKEND_URL}/api/MasterData/ImportExcel`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(`導入成功！${result.message}`);
+                queryFiles(); // 重新整理列表
+            } else {
+                alert(`導入失敗：${result.message}`);
+            }
+        } catch (err) {
+            console.error("導入錯誤:", err);
+            alert("系統連線異常，請稍後再試。");
+        }
+    };
+
+    fileInput.click();
 });
 // #endregion
 
