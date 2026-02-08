@@ -21,6 +21,7 @@ async function queryFiles() {
 
         data.forEach((item, index) => {
             const tr = document.createElement('tr');
+            tr.setAttribute('data-id', item.id); // 💡 關鍵：存入資料庫 ID
             // 💡 這裡對應後端傳回的 JSON 屬性名稱 (通常首字母會變小寫)
             tr.innerHTML = `
                 <td>${index + 1}</td>
@@ -161,6 +162,148 @@ document.getElementById('btnSave').addEventListener('click', async function () {
     btnSave.disabled = false;
     alert("保存作業執行完畢！");
 });
+// #endregion
+
+// #region 修改
+let isEditMode = false;
+
+document.getElementById('btnEdit').addEventListener('click', function () {
+    const table = document.getElementById('dataTableBody'); // 💡 請確認 HTML 裡 table 的 ID
+
+    if (!table) {
+        console.error("錯誤：找不到 id='dataTableBody' 的表格元素，請檢查 HTML。");
+        alert("系統錯誤：找不到表格元件。");
+        return;
+    }
+
+    isEditMode = !isEditMode;
+
+    if (isEditMode) {
+        this.classList.replace('btn-info', 'btn-warning');
+        this.innerHTML = '<i class="bi bi-x-circle"></i> 取消修改模式';
+        table.classList.add('table-hover-edit');
+        alert("修改模式已開啟，請直接點選下方表格中想修改的那一行。");
+    } else {
+        resetEditButton();
+    }
+});
+
+// 💡 新增：監聽表格內部的點擊動作
+document.getElementById('dataTableBody').addEventListener('click', function (e) {
+    // 如果現在不是修改模式，直接結束不處理
+    if (!isEditMode) return;
+
+    // 找到被點擊的那個 <tr> (行)
+    const row = e.target.closest('tr');
+
+    // 如果沒點到行，或是該行已經在編輯中，或是那是剛新增還沒存檔的行，就不處理
+    if (!row || row.classList.contains('editing') || row.classList.contains('is-new')) return;
+
+    console.log("偵測到點擊行，進入編輯模式");
+    enterRowEditMode(row);
+});
+
+// 💡 執行進入編輯模式的函數
+function enterRowEditMode(row) {
+    const existingEditingRow = document.querySelector('#dataTableBody tr.editing');
+    if (existingEditingRow) {
+        alert("請先完成或取消目前的修改。");
+        return;
+    }
+
+    row.classList.add('editing', 'table-info');
+
+    // 假設備註在第 4 欄 (Index 從 0 開始算，所以是 row.cells[3])
+    // 請根據您實際的欄位順序調整索引值
+    const remarkCell = row.cells[3];
+    const originalRemark = remarkCell.innerText;
+
+    // 將文字替換為輸入框
+    remarkCell.innerHTML = `<input type="text" class="form-control form-control-sm" value="${originalRemark}">`;
+
+    // 修改「操作」欄位的按鈕 (假設在第 2 欄，也就是 row.cells[1])
+    const actionCell = row.cells[1];
+    const originalActionHtml = actionCell.innerHTML; // 備份原本的「下載」按鈕
+
+    actionCell.innerHTML = `
+        <button class="btn btn-xs btn-success btn-save-row">保存</button>
+        <button class="btn btn-xs btn-secondary btn-cancel-row">取消</button>
+    `;
+
+    // 綁定「取消」按鈕邏輯
+    actionCell.querySelector('.btn-cancel-row').onclick = (e) => {
+        e.stopPropagation(); // 防止再次觸發行點擊
+        remarkCell.innerText = originalRemark;
+        actionCell.innerHTML = originalActionHtml;
+        row.classList.remove('editing', 'table-info');
+    };
+
+    // 綁定「保存」按鈕邏輯
+    actionCell.querySelector('.btn-save-row').onclick = async (e) => {
+        e.stopPropagation();
+        const newRemark = remarkCell.querySelector('input').value;
+        const id = row.getAttribute('data-id'); // ⚠️ 必須確保 queryFiles 有設定這個屬性
+        const modifier = document.getElementsByName('creator')[0].value || "admin";
+
+        await submitRowUpdate(id, newRemark, modifier, row, originalActionHtml);
+    };
+}
+
+// 💡 執行更新 API 的函式
+async function submitRowUpdate(id, remark, modifier, row, originalHtml) {
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('remark', remark || "");
+    formData.append('modifier', modifier);
+
+    try {
+        console.log(`準備更新 ID: ${id}, 備註: ${remark}`);
+
+        const response = await fetch(`${BACKEND_URL}/api/MasterData/UpdateMasterData`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            // const result = await response.json(); // 如果後端有回傳 JSON 才需要這行
+            alert("修改成功！");
+
+            // 1. 將輸入框變回純文字 (這部分保留，提供即時視覺回饋)
+            row.cells[3].innerText = remark;
+
+            // 2. 將按鈕變回原本的「下載」按鈕
+            row.cells[1].innerHTML = originalHtml;
+
+            // 3. 移除編輯狀態的樣式
+            row.classList.remove('editing', 'table-info');
+
+            // 💡 關鍵：自動觸發查詢，刷新整張表格的資料 (包含修改時間、修改人)
+            console.log("正在重新整理資料清單...");
+            queryFiles();
+        } else {
+            const errorData = await response.json();
+            alert("修改失敗：" + (errorData.message || "伺服器錯誤"));
+        }
+    } catch (err) {
+        console.error("連線錯誤:", err);
+        alert("無法連線至伺服器，請檢查網路狀態。");
+    }
+}
+
+function resetEditButton() {
+    const btn = document.getElementById('btnEdit');
+    const table = document.getElementById('dataTableBody');
+
+    if (btn) {
+        btn.classList.replace('btn-warning', 'btn-info');
+        btn.innerHTML = '<i class="bi bi-pencil-square"></i> 修改';
+    }
+
+    if (table) {
+        table.classList.remove('table-hover-edit');
+    }
+    isEditMode = false;
+}
 // #endregion
 
 //#region 人員視窗查詢
