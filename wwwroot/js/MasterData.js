@@ -306,6 +306,75 @@ function resetEditButton() {
 }
 // #endregion
 
+// #region 刪除
+// #region 刪除邏輯
+let isDeleteMode = false;
+
+document.getElementById('btnDelete').addEventListener('click', function () {
+    isDeleteMode = !isDeleteMode;
+    const table = document.getElementById('dataTableBody');
+
+    if (isDeleteMode) {
+        // 切換按鈕狀態
+        this.classList.replace('btn-info', 'btn-danger');
+        this.innerHTML = '<i class="bi bi-x-circle"></i> 取消刪除模式';
+        table.classList.add('table-hover-delete'); // 增加紅色選取效果的 CSS
+        alert("刪除模式已開啟，請點選您想刪除的資料行。");
+    } else {
+        resetDeleteButton();
+    }
+});
+
+// 監聽表格點擊 (重複利用事件委派)
+document.getElementById('dataTableBody').addEventListener('click', async function (e) {
+    if (!isDeleteMode) return;
+
+    const row = e.target.closest('tr');
+    if (!row || row.classList.contains('is-new')) return;
+
+    const id = row.getAttribute('data-id');
+    const fileName = row.cells[2].innerText; // 假設檔案名稱在第 3 欄
+
+    if (confirm(`確定要刪除檔案 [${fileName}] 嗎？\n(此操作為軟刪除，資料將保留在資料庫中)`)) {
+        await executeDelete(id, row);
+    }
+});
+
+async function executeDelete(id, row) {
+    const modifier = document.getElementsByName('creator')[0].value || "admin";
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('modifier', modifier);
+
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/MasterData/DeleteMasterData`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            alert("刪除成功！");
+            queryFiles(); // 💡 重新查詢，被標記為 IsDeleted=1 的資料將會消失
+        } else {
+            alert("刪除失敗");
+        }
+    } catch (err) {
+        console.error("連線錯誤:", err);
+    } finally {
+        resetDeleteButton();
+    }
+}
+
+function resetDeleteButton() {
+    const btn = document.getElementById('btnDelete');
+    btn.classList.replace('btn-danger', 'btn-info');
+    btn.innerHTML = '<i class="bi bi-trash"></i> 刪除';
+    document.getElementById('dataTableBody').classList.remove('table-hover-delete');
+    isDeleteMode = false;
+}
+// #endregion
+// #endregion
+
 //#region 人員視窗查詢
 function fetchUserData() {
     const searchInput = document.getElementById('modalSearchUser');

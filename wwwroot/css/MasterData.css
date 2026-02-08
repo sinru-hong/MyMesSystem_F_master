@@ -25,3 +25,10 @@
     padding: 1px 5px;
     font-size: 12px;
 }
+
+/* 刪除模式下的滑鼠樣式 */
+.table-hover-delete tr:hover {
+    cursor: pointer;
+    background-color: rgba(220, 53, 69, 0.1) !important; /* 淡紅色 */
+    border: 2px solid #dc3545;
+}
