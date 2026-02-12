@@ -1,0 +1,171 @@
+﻿/* 程式碼編輯器區塊 */
+.code-editor, .code-output {
+    height: 450px !important;
+    width: 100% !important; /* 確保填滿父容器 col-md-6 */
+    overflow-x: auto !important; /* 橫向內容過長時顯示捲軸 */
+    overflow-y: auto !important; /* 縱向內容過長時顯示捲軸 */
+    white-space: pre-wrap !important; /* 保持原始格式但不撐開容器 */
+    word-break: break-all !important; /* 禁止單字強制換行導致內容錯亂 */
+}
+
+    .code-editor:focus {
+        background-color: #ffffff !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important;
+    }
+
+/* 深色終端機 */
+.dark-terminal {
+    background-color: #1c1c1e !important;
+    border: none !important;
+    max-width: 100% !important;
+    table-layout: fixed; /* 強制固定佈局 */
+}
+
+/* Response 回傳文字區塊 */
+.code-output {
+    display: block;
+    max-width: 100%;
+    /* 🛠️ 設定文字為純白色 */
+    color: #ffffff !important;
+    /* 🛠️ 灰色細框：使用極淡的白色透明度達成 iOS 質感 */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px;
+    padding: 15px !important;
+    /* 🛠️ 背景層次：稍微帶一點深灰色的透明感 */
+    background-color: rgba(255, 255, 255, 0.03);
+    /* 確保字體使用等寬字體，更有工程師的嚴謹感 */
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+    /* 捲軸美化 */
+    .code-output::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .code-output::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2); /* 淡淡的半透明白 */
+        border-radius: 10px;
+    }
+
+    .code-output::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+/* 快速切換標籤：膠囊型設計 */
+.badge-ios-pill {
+    display: inline-flex;
+    align-items: center;
+    background-color: #f2f2f7 !important; /* iOS 淺灰色 */
+    color: #1c1c1e !important; /* 深黑色文字 */
+    border: 1px solid #e5e5ea !important; /* 極細邊框 */
+    padding: 8px 16px !important; /* 上下與左右間距，形成長橢圓 */
+    border-radius: 50px !important; /* 完美半圓角 */
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    cursor: pointer; /* 指向手勢 */
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    user-select: none; /* 防止文字被意外選取 */
+}
+
+    /* 懸停效果 (Hover)：黑白反轉 */
+    .badge-ios-pill:hover {
+        background-color: #1c1c1e !important; /* 背景轉黑 */
+        color: #ffffff !important; /* 文字轉白 */
+        transform: translateY(-2px); /* 輕微上浮感 */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* 增加陰影 */
+    }
+
+    /* 點擊效果 (Active)：Q 彈回饋 */
+    .badge-ios-pill:active {
+        transform: scale(0.95); /* 點擊時微縮小 */
+        background-color: #000000 !important;
+    }
+
+    /* 標籤內的圖示微調 (如果有加的話) */
+    .badge-ios-pill i {
+        font-size: 0.9rem;
+    }
+
+/* 切換時的輸入框高亮動畫 */
+@keyframes highlightPulse {
+    0% {
+        background-color: #f2f2f7;
+    }
+
+    50% {
+        background-color: rgba(210, 242, 108, 0.2);
+        border-color: #1c1c1e;
+    }
+
+    100% {
+        background-color: #f2f2f7;
+    }
+}
+
+.highlight-update {
+    animation: highlightPulse 0.5s ease;
+}
+
+/* 確保 URL 輸入框呈現圓角膠囊風格 */
+#apiUrl {
+    border-radius: 20px !important; /* 強制設定大圓角 */
+    padding: 10px 20px !important; /* 增加左右內距，讓文字不貼邊 */
+    background-color: #f8f8fa !important; /* 淡淡的 iOS 灰 */
+    border: 1px solid transparent !important;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.9rem !important;
+    color: #4a4a4e !important;
+    letter-spacing: -0.2px;
+    transition: all 0.3s ease;
+}
+
+    /* 聚焦時的效果 */
+    #apiUrl:focus {
+        background-color: #ffffff !important;
+        border-color: #1c1c1e !important;
+        box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.03) !important;
+        outline: none;
+    }
+
+/* Label 圖示互動 */
+.form-label i {
+    transition: color 0.3s ease;
+}
+
+.col-md-8:hover .form-label i {
+    color: #1c1c1e !important;
+}
+
+/* 自定義下拉選單樣式 */
+.custom-select-ios {
+    border-radius: 20px !important; /* 統一圓角 */
+    padding: 10px 15px !important;
+    background-color: #f8f8fa !important;
+    border: 1px solid transparent !important;
+    cursor: pointer;
+    appearance: none; /* 移除瀏覽器預設箭頭 */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%238e8e93' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 15px center !important;
+    background-size: 12px !important;
+    transition: all 0.3s ease !important;
+}
+
+    /* 下拉選單 Hover 效果 */
+    .custom-select-ios:hover {
+        background-color: #f2f2f7 !important;
+        border-color: rgba(28, 28, 30, 0.1) !important;
+        transform: translateY(-1px);
+    }
+
+    /* 針對選中狀態的文字顏色加深 */
+    .custom-select-ios:focus {
+        background-color: #ffffff !important;
+        border-color: #1c1c1e !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        outline: none;
+    }
+

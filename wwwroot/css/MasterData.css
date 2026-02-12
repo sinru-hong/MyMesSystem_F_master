@@ -1,52 +1,456 @@
-﻿/* 淺藍上傳按鈕 */
-.btn-info {
-    background-color: #5bc0de !important; /* 淺藍背景 */
-    border-color: #46b8da !important; /* 邊框顏色 */
-    color: white !important; /* 白色文字 */
+﻿/* MasterData.css */
+
+/* 1. 讓表格列更有「呼吸感」的卡片效果 */
+.table tbody tr {
+    background-color: #f9f9fb !important; /* 淺灰色基底 */
+    border-radius: 20px !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02) !important;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    border: 1px solid transparent !important;
 }
 
-/* 操作欄位寬度 */
-.text-nowrap {
-    white-space: nowrap; /* 禁止換行 */
+    .table tbody tr:hover {
+        transform: none !important;
+        /* 保留背景色與陰影變化，可以維持點擊感但不會浮起 */
+        background-color: #ffffff !important;
+         box-shadow: 0 10px 25px rgba(0,0,0,0.06) !important;
+        
+    }
+
+/* 2. 修改表格標題樣式 */
+.table thead th {
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    color: #8e8e93 !important; /* iOS 灰色標題 */
+    border: none !important;
+    padding: 20px 15px !important;
+    text-transform: uppercase;
 }
 
-/* 按鈕比例微調 */
-.btn-sm {
-    padding: 2px 8px !important; /* 內距調整 */
-    font-size: 12px !important; /* 字體大小 */
+/* 3. 人員選擇 Modal 的美化 */
+.modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px); /* 玻璃擬態 */
+    border-radius: 40px !important;
 }
 
-.table-hover-edit tbody tr:not(.is-new):hover {
-    cursor: pointer; /* 手指指標 */
-    background-color: rgba(0, 123, 255, 0.1) !important; /* 淡藍背景 */
+.modal-header {
+    padding: 30px 40px 10px 40px !important;
 }
 
-.btn-xs {
-    padding: 1px 5px; /* 極小內距 */
-    font-size: 12px; /* 字體大小 */
+/* 4. 強制按鈕在 MasterData 也具備黑白反轉動畫 */
+#btnQuery.btn-white-pill,
+.btn-white-pill {
+    transition: all 0.3s ease !important;
 }
 
-/* 刪除模式樣式 */
-.table-hover-delete tr:hover {
-    cursor: pointer; /* 手指指標 */
-    background-color: rgba(220, 53, 69, 0.1) !important; /* 淡紅背景 */
-    border: 2px solid #dc3545; /* 紅色邊框 */
+    .btn-white-pill:hover {
+        background-color: #1c1c1e !important;
+        color: #ffffff !important;
+        transform: translateY(-2px);
+    }
+
+/* 確保輸入框在 flex 容器中能正確伸縮 */
+.flex-grow-1 {
+    flex: 1;
 }
 
-/* 旋轉動畫 */
-@keyframes spin {
+/* 修正按鈕大小，避免影響行高 */
+.btn-white-pill.rounded-circle {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+     border: 1px solid #e5e5ea !important;
+     background-color: #ffffff !important;
+    
+}
+
+    /* 讓搜尋圖示精確置中 */
+    .btn-white-pill.rounded-circle i {
+        font-size: 1.1rem;
+        color: #1c1c1e;
+        
+    }
+
+/* 讓表格列初始狀態隱藏，並準備好動畫 */
+#dataTableBody tr,
+#userModalTableBody tr {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+    /* 當 JS 加入這個類別時觸發動畫 */
+    #dataTableBody tr.reveal,
+    #userModalTableBody tr.reveal {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+/* 將 MasterData 頁面的 btn-dark 改為白底黑字樣式 */
+.btn-dark {
+    background-color: #ffffff !important; /* 初始背景：白色 */
+    color: #1c1c1e !important; /* 初始文字：深黑色 */
+    border: 1px solid #e5e5ea !important; /* 加入細邊框增加質感 */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; /* 平滑過渡動畫 [cite: 60] */
+}
+
+    /* 設定滑鼠懸停 (Hover) 狀態：轉為黑底白字 */
+.btn-dark:hover {
+        background-color: #1c1c1e !important; /* 背景轉為深黑 [cite: 58] */
+        color: #ffffff !important; /* 文字轉為白色 [cite: 59] */
+        border-color: #1c1c1e !important; /* 邊框同步變色 */
+        transform: translateY(-2px); /* 輕微上浮感 [cite: 64] */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* 增加陰影 [cite: 65] */
+    }
+
+/* 保存按鈕出現時的微動畫 */
+.save-btn {
+    animation: slideInRight 0.3s ease-out forwards;
+    
+}
+
+@keyframes slideInRight {
     from {
-        transform: rotate(0deg);
+        opacity: 0;
+        transform: translateX(10px);
     }
-    /* 起始角度 */
+
     to {
-        transform: rotate(360deg);
+        opacity: 1;
+        transform: translateX(0);
     }
-    /* 結束角度 */
 }
 
-/* 旋轉類別 */
-.fa-spin {
-    animation: spin 1s linear infinite; /* 無限循環 */
-    display: inline-block; /* 確保動畫生效 */
+/* 定義統一的 iOS 懸浮外框樣式 */
+.unified-card-style {
+    background-color: #ffffff !important;
+    /* 使用柔和陰影 [cite: 75] */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+    /* 淡淡的灰色邊框 [cite: 76] */
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    /* 關鍵：補回大圓角 [cite: 78] */
+    border-radius: 30px !important;
+    /* 確保內容不超出圓角 */
+    overflow: hidden;
+    transition: all 0.3s ease !important;
 }
+
+/* 確保工具欄、搜尋卡片、表格容器都套用 */
+.mb-4.p-3.bg-white, /* 工具欄 */
+.card-ios, /* 搜尋卡片 */
+.table-container /* 表格容器 */ {
+    background-color: #ffffff !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 30px !important; /* 統一圓角大小，看起來更協調 */
+}
+
+/* 修正小螢幕下的排列，防止重疊 [cite: 79, 81] */
+.d-flex.align-items-center.gap-2 {
+    flex-wrap: wrap; /* 空間不足時自動換行 [cite: 79] */
+}
+
+/* 1. 增強輸入框聚焦質感 [cite: 86, 87] */
+.form-control-ios {
+    min-width: 150px; /* 防止縮小時輸入框消失 [cite: 79] */
+    flex: 1 1 auto; /* 自適應填充剩餘空間 [cite: 80] */
+    transition: all 0.3s ease !important;
+}
+
+
+/* 讓工具列容器具備自適應換行能力 */
+.d-flex.flex-wrap.align-items-center {
+    gap: 15px !important; /* 加大間距，防止小螢幕時按鈕擠在一起 */
+}
+
+/* 確保按鈕內的圖示與文字垂直對齊 */
+.btn-white-pill.d-flex {
+    line-height: 1.5;
+    white-space: nowrap; /* 確保「匯出」兩字不會因為視窗縮小而換行 */
+}
+
+@media (max-width: 768px) {
+    .card-ios form .col-md-5 {
+        margin-bottom: 1.5rem; /* 增加上下間距防止擠壓 [cite: 81] */
+    }
+}
+
+.form-control-ios:focus {
+    background-color: #ffffff !important;
+    border-color: #1c1c1e !important; /* 聚焦時變為深黑 [cite: 86] */
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05) !important; /* 柔和的擴散陰影 [cite: 87] */
+    outline: none;
+}
+
+/* 2. 檔案路徑長文字縮略 */
+.table td:nth-child(2) {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 3. 表格標題質感提升  */
+.table thead th {
+    font-size: 0.75rem !important; /* 縮小字體更顯精緻  */
+    letter-spacing: 1.5px !important; /* 加大字距  */
+    color: #a1a1a6 !important; /* 使用 iOS 標題灰  */
+    text-transform: uppercase; /* 強制大寫增加專業感  */
+    border-bottom: 2px solid #f2f2f7 !important;
+}
+
+/* 增加按鈕的點擊感 (Q彈效果) [cite: 56, 65] */
+.btn:active {
+    transform: scale(0.95) !important;
+    transition: transform 0.1s ease;
+}
+
+/* 刪除按鈕專屬反轉效果 */
+.btn-white-pill.text-danger:hover {
+    background-color: #dc3545 !important; /* 轉為紅色背景 */
+    color: #ffffff !important; /* 文字變白色 */
+    border-color: #dc3545 !important;
+}
+
+/* 修改按鈕啟動時的狀態 */
+.active-edit {
+    background-color: #1c1c1e !important; /* 保持深黑 [cite: 1, 66] */
+    color: var(--accent-lime) !important; /* 文字變螢光綠，增加警示感  */
+    border-color: var(--accent-lime) !important;
+}
+
+/* 編輯輸入框的進入動畫 */
+.edit-input.reveal {
+    animation: scaleIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 讓正在編輯的行有淡淡的發光感 */
+.table-hover-edit tr:hover {
+    box-shadow: 0 0 15px rgba(210, 242, 108, 0.3) !important; /* 螢光綠呼吸光 [cite: 1, 75] */
+}
+
+/* 保存按鈕漸現動畫 */
+.reveal-btn {
+    animation: slideInLeft 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    background-color: #1c1c1e !important; /* 深黑底 */
+    border: none !important;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 讓修改模式下的輸入框邊框稍微亮一點，提示可編輯 */
+.edit-input {
+    border: 1px dashed #d2f26c !important; /* 螢光綠虛線邊框 */
+}
+
+/* 數據更新後的閃爍提示 */
+@keyframes highlightUpdate {
+    0% {
+        background-color: rgba(210, 242, 108, 0.4);
+    }
+    /* 螢光綠閃爍 [cite: 1] */
+    100% {
+        background-color: #ffffff;
+    }
+}
+
+.row-updated {
+    animation: highlightUpdate 1s ease-out;
+}
+
+/* 1. 修改日曆主面板：黑灰底 + 灰字 */
+.flatpickr-calendar {
+    background: #1c1c1e !important; /* 深黑色基底 [cite: 56, 91, 68] */
+    color: #8e8e93 !important; /* 整體文字改為 iOS 標題灰 [cite: 46, 86] */
+    border-radius: 25px !important; /* 維持 iOS 大圓角 [cite: 70, 73] */
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4) !important; /* 強化陰影深度 [cite: 69, 72] */
+    border: 1px solid rgba(255, 255, 255, 0.05) !important; /* 極細微的邊框 */
+    backdrop-filter: blur(15px); /* 玻璃擬態質感 [cite: 47] */
+}
+
+/* 2. 修改月份與星期顏色：低調灰 */
+.flatpickr-current-month,
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-weekday {
+    color: #8e8e93 !important; /* 月份與星期文字改為灰色 [cite: 46] */
+    fill: #8e8e93 !important; /* 切換箭頭也改為灰色 */
+    font-weight: 600 !important;
+}
+
+/* 3. 修改日期數字：灰字 */
+.flatpickr-day {
+    color: #8e8e93 !important; /* 預設日期文字為灰色 [cite: 86] */
+}
+
+    /* 4. 修改選中日期：灰白色框住 (色塊效果) */
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange {
+        background: #e5e5ea !important; /* 使用灰白色塊作為選中標示  */
+        border-color: #e5e5ea !important;
+        color: #1c1c1e !important; /* 選中文字轉為深黑以確保易讀性 [cite: 54, 57] */
+        font-weight: bold !important;
+        box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1) !important;
+    }
+
+    /* 5. 區間內的背景：極淡的灰色感 */
+    .flatpickr-day.inRange {
+        background: rgba(229, 229, 234, 0.1) !important; /* 區間內使用極低透明度的灰白 [cite: 52] */
+        box-shadow: -5px 0 0 rgba(229, 229, 234, 0.1), 5px 0 0 rgba(229, 229, 234, 0.1) !important;
+        color: #e5e5ea !important; /* 區間內文字略微亮起 */
+    }
+
+    /* 6. 滑鼠懸停效果 */
+    .flatpickr-day:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important; /* 懸停時文字亮起 */
+    }
+
+    /* 7. 修正今天日期的標示 (防止與選中色衝突) */
+    .flatpickr-day.today {
+        border-color: #8e8e93 !important;
+    }
+
+        .flatpickr-day.today:hover {
+            background: #8e8e93 !important;
+            color: #1c1c1e !important;
+        }
+
+/* 下載按鈕點擊時的縮放反饋 */
+.btn-white-pill.rounded-circle:active {
+    transform: scale(0.85) !important;
+    background-color: #f2f2f7 !important; /* 點擊時變為極淺灰色 */
+}
+
+/* 讓下載圖示在 Hover 時有一個輕微的跳動感 */
+.btn-white-pill.rounded-circle:hover i {
+    animation: bounceDown 0.6s infinite alternate;
+}
+
+@keyframes bounceDown {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(3px);
+    }
+}
+
+/* 匯出按鈕 Hover 時圖示向上跳動 */
+#btnExport:hover i {
+    transform: translateY(-3px);
+    transition: transform 0.3s ease;
+}
+
+/* 匯入按鈕 Hover 時圖示向下跳動 */
+#btnImport:hover i {
+    transform: translateY(3px);
+    transition: transform 0.3s ease;
+}
+
+/* 讓按鈕在點擊時有 iOS 的縮放反饋 [cite: 66] */
+.btn-white-pill:active {
+    transform: scale(0.96) !important;
+}
+
+/* 增強輸入框的圓角與質感 */
+.form-control-ios {
+    border-radius: 25px !important; /* 增加圓角弧度，與按鈕呼應 */
+    padding: 12px 20px !important; /* 增加左右內距，讓文字不會太貼近圓角邊緣 */
+    background-color: #f2f2f7 !important; /* iOS 淺灰色基底 [cite: 17] */
+    border: 1px solid transparent !important;
+    font-size: 0.95rem;
+    transition: all 0.3s ease !important;
+     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02); /* 微弱的內陰影增加層次感 */
+}
+
+    /* 聚焦 (Focus) 時的狀態：邊框轉深色並增加柔和發光 */
+    .form-control-ios:focus {
+        background-color: #ffffff !important;
+         border-color: #1c1c1e !important;
+        box-shadow: 0 0 0 4px rgba(28, 28, 30, 0.08) !important; /* 更柔和的 iOS 風格聚焦圈  */
+        outline: none;
+        
+    }
+
+/* 針對「建立日期」唯讀狀態的特別微調 */
+#inputCreateTime.bg-white {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e5ea !important; /* 加入淡淡的邊框 */
+}
+
+/* 彈窗專用表格樣式 */
+.custom-modal-table {
+    max-height: 400px;
+    border-radius: 20px;
+    background-color: #f8f8fa;
+    padding: 10px;
+}
+
+    .custom-modal-table table {
+        background: transparent;
+    }
+
+    /* 讓每一列在 Hover 時有更明顯的 iOS 背景色 */
+    .custom-modal-table tbody tr {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 12px; /* 模擬圓角列 */
+    }
+
+        .custom-modal-table tbody tr:hover {
+            background-color: #ffffff !important;
+            transform: scale(1.01);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+    /* 移除 Table 的預設邊框線條 */
+    .custom-modal-table .table > :not(caption) > * > * {
+        border-bottom: none;
+        padding: 12px 15px;
+    }
+
+    /* 選中狀態標記 (選填：供 JS 呼叫) */
+    .custom-modal-table tr.is-selected {
+        background-color: #1c1c1e !important;
+        color: #ffffff !important;
+    }
+
+/* 解決圖示重疊問題 */
+.position-relative i.bi-search {
+    pointer-events: none; /* 讓點擊動作可以穿透圖示到輸入框 */
+}
+
+/* 統一彈窗內的按鈕高度與圓角 */
+.modal-content .btn {
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+    .modal-content .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    }

@@ -1,0 +1,116 @@
+﻿/* 延續我們之前定義的圓角與陰影 */
+:root {
+    --ios-bg: #f2f2f7;
+    --ios-card-bg: #ffffff;
+    --ios-accent: #d2f26c; /* 欣汝最愛的螢光綠 */
+}
+
+body {
+    background-color: var(--ios-bg);
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: relative;
+}
+
+/* 背景光暈 */
+.bg-glow {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(210, 242, 108, 0.15) 0%, rgba(242, 242, 247, 0) 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+}
+
+.login-card {
+    width: 420px;
+    padding: 50px 40px;
+    background: var(--ios-card-bg) !important;
+    border-radius: 35px !important; /* 更大更圓潤的 iOS 感 */
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(0, 0, 0, 0.03) !important;
+    z-index: 1;
+}
+
+/* 圖示風格 */
+.login-icon {
+    font-size: 2.5rem;
+    color: #1c1c1e;
+}
+
+/* 輸入框樣式優化 */
+.form-control-ios {
+    border-radius: 20px !important;
+    padding: 14px 20px !important;
+    background-color: #f8f8fa !important;
+    border: 1px solid transparent !important;
+    transition: all 0.3s ease;
+}
+
+    .form-control-ios:focus {
+        background-color: #ffffff !important;
+        border-color: #1c1c1e !important;
+        box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.03) !important;
+        outline: none;
+    }
+
+/* 密碼切換按鈕 */
+.input-group-ios {
+    position: relative;
+}
+
+.password-toggle-ios {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #8e8e93; /* 我們定義的灰色 */
+    transition: color 0.3s;
+}
+
+    .password-toggle-ios:hover {
+        color: #1c1c1e;
+    }
+
+/* 登入按鈕 */
+.btn-dark-ios {
+    background-color: #1c1c1e !important;
+    color: white !important;
+    border-radius: 20px !important;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s;
+}
+
+    .btn-dark-ios:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+        background-color: #000000 !important;
+    }
+
+    .btn-dark-ios:active {
+        transform: scale(0.97);
+    }
+
+/* 錯誤訊息小標籤 */
+.bg-danger-soft {
+    background-color: rgba(255, 59, 48, 0.1);
+    padding: 4px 10px;
+    border-radius: 10px;
+}
+
+.smaller {
+    font-size: 0.7rem;
+}

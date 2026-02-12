@@ -1,111 +1,166 @@
-﻿
-<div class="container-fluid py-3">
-    <div class="d-flex flex-wrap gap-2 mb-3 bg-light p-2 border rounded">
-        <button id="btnRefresh" class="btn btn-info text-white"><i class="bi bi-arrow-clockwise"></i> 刷新</button>
-        <button id="btnQuery" class="btn btn-info text-white"><i class="bi bi-search"></i> 查詢</button>
-        <button id="btnSave" class="btn btn-info text-white"><i class="bi bi-floppy"></i> 保存</button>
-        <button id="btnAdd" class="btn btn-info text-white"><i class="bi bi-plus-lg"></i> 新增</button>
-        <button id="btnEdit" class="btn btn-info text-white"><i class="bi bi-pencil-square"></i> 修改</button>
-        <button id="btnDelete" class="btn btn-info text-white"><i class="bi bi-trash"></i> 刪除</button>
-        <button id="btnImport" class="btn btn-info text-white"><i class="bi bi-file-earmark-excel"></i> 導入</button>
-        <button id="btnExport" class="btn btn-info text-white"><i class="bi bi-file-earmark-arrow-up"></i> 導出</button>
+﻿<div class="w-100 pe-5">
+    <div class="mb-2 reveal-text">
+        <div class="d-flex align-items-center gap-3">
+            <h2 class="fw-bold m-0" style="letter-spacing: -1px;">資料管理中心</h2>
+        </div>
+        <p class="text-muted mt-2">以嚴謹的後端邏輯與解耦思維，建構高可靠性的數據管理基石。</p>
     </div>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-4 p-3 unified-card-style">
+        <div class="d-flex gap-2 flex-wrap"> 
+            <button id="btnRefresh" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm">
+                <i class="bi bi-arrow-clockwise me-2"></i>刷新
+            </button>
 
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="card-body">
-                <form id="searchForm" class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">建立人員</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="creator" id="inputCreator">
-        @*                     <button class="btn btn-outline-secondary" type="button"
-                                    data-bs-toggle="modal" data-bs-target="#userSelectModal">
-                                <i class="bi bi-display"></i>
-                            </button> *@
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">建立日期</label>
-                        <input type="text" class="form-control bg-white" name="createTime" id="inputCreateTime" placeholder="請選擇日期">
-                    </div>
-                </form>
-            </div>
+            <button id="btnQuery" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm">
+                <i class="bi bi-search me-2"></i>查詢
+            </button>
+
+            <button id="btnAdd" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm">
+                <i class="bi bi-plus-lg me-2"></i>新增
+            </button>
+
+            <button id="btnEdit" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm">
+                <i class="bi bi-pencil-square me-2"></i>修改
+            </button>
+
+        </div>
+
+        <div class="ms-auto d-flex gap-2">
+            <button id="btnImport" class="btn btn-white-pill px-4 shadow-sm d-flex align-items-center">
+                <i class="bi bi-file-earmark-excel me-2"></i>匯入
+            </button>
+            <button id="btnExport" class="btn btn-white-pill px-4 shadow-sm d-flex align-items-center">
+                <i class="bi bi-file-earmark-arrow-up me-2"></i>匯出
+            </button>
         </div>
     </div>
 
-    <div class="table-responsive border rounded bg-white" style="height: 60vh; overflow-y: auto;">
-        <table class="table table-bordered table-hover table-sm mb-0">
-            <thead class="table-light sticky-top">
-                <tr class="text-nowrap">
-                    <th>序號</th>
-                    <th>操作</th>
-                    <th>檔案路徑</th>
-                    <th>備註</th>
-                    <th>建立人員</th>
-                    <th>建立日期</th>
-                    <th>最後修改人員</th>
-                    <th>最後修改日期</th>
-                </tr>
-            </thead>
-            <tbody id="dataTableBody">
-                <tr>
-                </tr>
-            </tbody>
-        </table>
+    <div class="card-ios mb-5 p-4 unified-card-style">
+        <form id="searchForm" class="row g-4 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label small fw-bold text-muted mb-2 ms-2">
+                    <i class="bi bi-person-badge me-1"></i>建立人員
+                </label>
+                <div class="d-flex align-items-center gap-3">
+                    <input type="text" class="form-control-ios flex-sm-grow-1 shadow-sm"
+                           name="creator" id="inputCreator"
+                           placeholder="點擊搜尋人員..." readonly>
+
+                    <button class="btn btn-white-pill rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center"
+                            type="button" data-bs-toggle="modal" data-bs-target="#userSelectModal"
+                            style="width: 46px; height: 46px; flex-shrink: 0;">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <label class="form-label small fw-bold text-muted mb-2 ms-2">
+                    <i class="bi bi-calendar3 me-1"></i>建立日期
+                </label>
+                <div class="input-group">
+                    <input type="text" class="form-control-ios flex-sm-grow-1 shadow-sm"
+                           name="createTime" id="inputCreateTime"
+                           placeholder="請選擇日期範疇..."
+                           readonly
+                           style="cursor: pointer;">
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="table-container bg-white p-4 unified-card-style">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">序號</th>
+                        <th>檔案路徑</th>
+                        <th>備註</th>
+                        <th>建立人員</th>
+                        <th>建立日期</th>
+                        <th class="pe-4 text-center">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="dataTableBody">
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <div class="modal fade" id="userSelectModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title">人員主檔選單</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="input-group mb-3">
-                    <span class="input-group-text">人員姓名/代碼</span>
-                    <input type="text" id="modalSearchUser" class="form-control" placeholder="請輸入關鍵字...">
-                    <button class="btn btn-primary" type="button" onclick="fetchUserData()">查詢</button>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 30px; background-color: #ffffff;">
+
+            <div class="modal-header border-0 p-4 pb-2">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box-sm bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
+                        <i class="bi bi-people-fill small"></i>
+                    </div>
+                    <h4 class="fw-bold m-0" style="letter-spacing: -0.5px;">人員主檔選單</h4>
                 </div>
-                <div class="table-responsive" style="max-height: 400px;">
-                    <table class="table table-bordered table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>序號</th>
-                                <th>人員代碼</th>
-                                <th>人員名稱</th>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4 pt-2">
+                <div class="row g-2 mb-4">
+                    <div class="col">
+                        <div class="position-relative d-flex align-items-center">
+                            <input type="text" id="modalSearchUser"
+                                   class="form-control-ios ps-5 w-100 shadow-sm"
+                                   placeholder="輸入人員姓名或代碼關鍵字..."
+                                   style="background-color: #f8f8fa !important; border-radius: 25px !important;">
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-dark px-4 h-100 shadow-sm rounded-pill fw-bold"
+                                type="button" onclick="fetchUserData()"
+                                style="border-radius: 25px !important;">
+                            查詢
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive custom-modal-table">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr class="text-muted small border-bottom">
+                                <th class="ps-4 fw-bold">序號</th>
+                                <th class="fw-bold">人員代碼</th>
+                                <th class="pe-4 fw-bold text-end">人員名稱</th>
                             </tr>
                         </thead>
-                        <tbody id="userModalTableBody">
+                        <tbody id="userModalTableBody" class="border-0">
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="confirmUserSelect">確認</button>
+
+            <div class="modal-footer border-0 p-4 pt-2">
+                <button type="button" class="btn btn-light rounded-pill px-4 border shadow-sm fw-bold"
+                        data-bs-dismiss="modal"
+                        style="border-radius: 25px !important;">
+                    取消
+                </button>
+                <button type="button" class="btn btn-dark rounded-pill px-4 shadow fw-bold"
+                        id="confirmUserSelect"
+                        style="border-radius: 25px !important;">
+                    確認選取
+                </button>
             </div>
         </div>
     </div>
-</div>
-
-<div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 9999; justify-content: center; align-items: center; flex-direction: column;">
-    <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
-        <span class="visually-hidden">Loading...</span>
-    </div>
-    <div class="mt-2 text-white fw-bold">正在重新整理...</div>
 </div>
 @using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
 @section Scripts {
     <script>
         const currentLoginUser = "@HttpContextAccessor.HttpContext?.Session.GetString("UserEmplNo")" || "未知用戶";
-        console.log("當前操作者工號:", currentLoginUser);
     </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh-tw.js"></script>
     <script src="~/js/MasterData.js"></script>

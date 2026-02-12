@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using MyMesSystem_F.Filters;
 using MyMesSystem_F.Models;
 
 namespace MyMesSystem_F.Controllers
@@ -21,6 +22,14 @@ namespace MyMesSystem_F.Controllers
         public IActionResult Login()
         {
             return View();
+        }
+
+        public IActionResult Logout()
+        {
+            // 清除 Session 資料
+            HttpContext.Session.Clear();
+            // 導向登入頁面
+            return RedirectToAction("Login");
         }
 
         // 2. 處理登入驗證
@@ -108,6 +117,7 @@ namespace MyMesSystem_F.Controllers
             }
         }
 
+        [LoginCheckFilter] // 掛上這個標籤，沒登入就進不來
         public IActionResult Index()
         {
             return View();

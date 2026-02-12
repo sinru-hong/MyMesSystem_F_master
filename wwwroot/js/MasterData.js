@@ -1,14 +1,15 @@
 ﻿const BACKEND_URL = "https://localhost:44326";
 
-// #region 查詢
+// #region 1. 查詢邏輯：對接新輸入框
 const btnQuery = document.getElementById('btnQuery');
 if (btnQuery) {
     btnQuery.addEventListener('click', queryFiles);
 }
 
 async function queryFiles() {
-    const createUser = document.getElementsByName('creator')[0].value;
-    const createDate = document.getElementsByName('createTime')[0].value;
+    // 對接 form-control-ios 的值 [cite: 120, 121]
+    const createUser = document.getElementById('inputCreator').value;
+    const createDate = document.getElementById('inputCreateTime').value;
 
     try {
         const response = await fetch(`${BACKEND_URL}/api/MasterData/GetUploadFiles?creator=${createUser}&date=${createDate}`);
@@ -21,490 +22,544 @@ async function queryFiles() {
         data.forEach((item, index) => {
             const tr = document.createElement('tr');
             tr.setAttribute('data-id', item.id);
+
+            // 在 queryFiles 函式內部的 tr.innerHTML 修改如下
             tr.innerHTML = `
-                <td>${index + 1}</td>
-                <td>
-                    <button class="btn btn-sm btn-primary" onclick='downloadFile(${JSON.stringify(item.filePath)})'>下載</button>
-                </td>
-                <td>${item.filePath}</td>
-                <td>${item.remark || ''}</td>
-                <td>${item.creator}</td>
-                <td>${new Date(item.createTime).toLocaleString()}</td>
-                <td>${item.lastModifier || ''}</td>
-                <td>${item.lastModifyTime ? new Date(item.lastModifyTime).toLocaleString() : ''}</td>
-            `;
+    <td class="ps-4 text-muted">${index + 1}</td>
+    <td title="${item.filePath}" class="fw-medium">${item.filePath}</td> 
+    <td>${item.remark || ""}</td> 
+    <td><span class="badge bg-light text-dark border px-3 rounded-pill">${item.creator}</span></td>
+    <td class="text-secondary small">${new Date(item.createTime).toLocaleString('zh-TW', { hour12: false })}</td>
+    <td class="pe-4 text-center">
+        <div class="d-flex justify-content-center gap-1">
+            <button class="btn btn-sm btn-white-pill rounded-circle p-2" onclick="downloadFile(this)">
+                <i class="bi bi-download"></i>
+            </button>
+            <button class="btn btn-sm btn-white-pill rounded-circle p-2 text-danger" onclick="deleteItem('${item.id}')">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </td>
+`;
             tbody.appendChild(tr);
+
+            // [關鍵]：利用 setTimeout 達成依序展開的效果
+            setTimeout(() => {
+                tr.classList.add('reveal');
+            }, index * 50); // 每行間隔 50 毫秒
         });
     } catch (err) {
         console.error("查詢失敗:", err);
-        alert("查詢發生錯誤，請查看控制台");
     }
 }
 // #endregion
 
-// #region 下載檔案
-function downloadFile(filePath) {
-    const url = `${BACKEND_URL}/api/MasterData/DownloadFile?fileName=${encodeURIComponent(filePath)}`;
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', filePath);
-    link.style.display = 'none';
-
-    document.body.appendChild(link);
-    link.click();
-
-    document.body.removeChild(link);
-}
-// #endregion
-
-// #region 新增
+// #region 2. 新增邏輯：優化保存按鈕位置與樣式
 document.getElementById('btnAdd').addEventListener('click', function () {
     const tbody = document.getElementById('dataTableBody');
     const newRow = document.createElement('tr');
-
-    newRow.className = 'table-warning is-new';
-
-    const nextIndex = tbody.rows.length + 1;
+    newRow.className = 'is-new reveal'; // 觸發滑入動畫
 
     newRow.innerHTML = `
-        <td>${nextIndex}</td>
+        <td class="ps-4 text-muted">-</td>
         <td>
-            <button class="btn btn-sm btn-info text-white upload-btn">上傳</button>
-            <button class="btn btn-sm btn-danger cancel-new-row">取消</button>
+            <div class="d-flex align-items-center gap-2 btn-container">
+                <input type="text" class="form-control-ios flex-grow-1" 
+                       name="newFilePath" placeholder="選擇檔案..." 
+                       readonly style="max-width: 250px; background-color: #f2f2f7;">
+                <button class="btn btn-white-pill px-4 upload-btn fw-bold shadow-sm" type="button">選擇</button>
+            </div>
             <input type="file" class="d-none row-file-input">
         </td>
-        <td><input type="text" class="form-control form-control-sm" name="newFilePath" placeholder="請上傳檔案..."></td>
-        <td><input type="text" class="form-control form-control-sm" name="newRemark"></td>
         <td>
-            <input type="text" class="form-control form-control-sm bg-light"
-                   name="newCreator" value="${currentLoginUser}" readonly>
+            <input type="text" class="form-control-ios" name="newRemark" placeholder="請輸入備註...">
         </td>
-        <td><input type="text" class="form-control form-control-sm" name="newCreateTime" value="${document.getElementById('inputCreateTime').value}" readonly></td>
-        <td>-</td>
-        <td>-</td>
+        <td><span class="badge bg-light text-dark border px-3 rounded-pill">${currentLoginUser}</span></td>
+        <td class="text-secondary small">${new Date().toLocaleDateString()}</td>
+        <td class="pe-4 text-center">
+            <div class="d-flex justify-content-center gap-1 action-container">
+                <button class="btn btn-sm btn-white-pill shadow-sm px-3 cancel-new-row">
+                    <i class="bi bi-x-lg me-1"></i>取消
+                </button>
+            </div>
+        </td>
     `;
 
     tbody.insertBefore(newRow, tbody.firstChild);
 
     const fileInput = newRow.querySelector('.row-file-input');
     const pathInput = newRow.querySelector('[name="newFilePath"]');
-    newRow.querySelector('.upload-btn').addEventListener('click', () => fileInput.click());
+    const uploadBtn = newRow.querySelector('.upload-btn');
+    const remarkInput = newRow.querySelector('[name="newRemark"]');
+    const actionContainer = newRow.querySelector('.action-container');
+
+    uploadBtn.addEventListener('click', () => fileInput.click());
+
     fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) pathInput.value = e.target.files[0].name;
-    });
-    newRow.querySelector('.cancel-new-row').addEventListener('click', () => newRow.remove());
-});
-// #endregion
+        if (e.target.files.length > 0) {
+            pathInput.value = e.target.files[0].name;
+            pathInput.style.backgroundColor = "#ffffff";
 
-// #region 保存
-document.getElementById('btnSave').addEventListener('click', async function () {
-    const newRows = document.querySelectorAll('#dataTableBody tr.is-new');
+            // 檢查是否已有保存按鈕，若無則建立與「修改邏輯」一致的小勾按鈕
+            if (!newRow.querySelector('.save-btn')) {
+                const saveBtn = document.createElement('button');
+                // 套用妳要求的圓形小勾樣式
+                saveBtn.className = 'btn btn-sm btn-white-pill rounded-circle p-2 save-btn reveal-btn shadow-sm';
+                saveBtn.innerHTML = '<i class="bi bi-check-lg text-dark"></i>';
+                saveBtn.title = '點擊保存';
 
-    if (newRows.length === 0) {
-        alert("目前沒有需要保存的新增行。");
-        return;
-    }
+                saveBtn.addEventListener('click', async () => {
+                    const file = fileInput.files[0];
+                    if (!file) {
+                        alert("請先選擇檔案！");
+                        return;
+                    }
 
-    const btnSave = this;
-    btnSave.disabled = true;
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("creator", currentLoginUser);
+                    formData.append("remark", remarkInput.value); // 修正：取 .value 內容
+                    formData.append("filePath", file.name);
 
-    for (const row of newRows) {
-        try {
-            const formData = new FormData();
-            const fileInput = row.querySelector('.row-file-input');
-            const remark = row.querySelector('[name="newRemark"]').value;
-            const filePathValue = row.querySelector('[name="newFilePath"]').value;
-            const creator = row.querySelector('[name="newCreator"]').value;
+                    try {
+                        const loader = document.getElementById('loadingOverlay');
+                        if (loader) loader.style.display = 'flex';
 
-            if (fileInput && fileInput.files.length > 0) {
-                formData.append('file', fileInput.files[0]);
-            }
-            formData.append('remark', remark || "");
-            formData.append('filePath', filePathValue || "");
-            formData.append('creator', creator);
+                        const response = await fetch(`${BACKEND_URL}/api/MasterData/SaveMasterData`, {
+                            method: 'POST',
+                            body: formData
+                        });
 
-            const response = await fetch(`${BACKEND_URL}/api/MasterData/SaveMasterData`, {
-                method: 'POST',
-                body: formData
-            });
+                        const result = await response.json();
 
-            if (response.ok) {
-                row.classList.remove('is-new', 'table-warning');
-
-                row.querySelectorAll('input').forEach(input => {
-                    const val = input.value;
-                    const cell = input.parentElement;
-                    cell.innerText = val;
+                        if (response.ok && (result.success || result.Success)) {
+                            alert("✨ " + (result.message || "儲存成功"));
+                            newRow.remove();
+                            if (typeof queryFiles === "function") queryFiles();
+                        } else {
+                            alert("❌ " + (result.message || "儲存失敗"));
+                        }
+                    } catch (error) {
+                        console.error("API 請求發生錯誤:", error);
+                        alert("系統連線異常，請檢查網路。");
+                    } finally {
+                        const loader = document.getElementById('loadingOverlay');
+                        if (loader) loader.style.display = 'none';
+                    }
                 });
 
-                const actionCell = row.cells[1];
-                actionCell.innerHTML = '<span class="badge bg-success">已保存</span>';
-
-                actionCell.querySelector('.btn-save-row').onclick = async (e) => {
-                    e.stopPropagation();
-                    const newRemark = remarkCell.querySelector('input').value;
-                    const id = row.getAttribute('data-id');
-                    const modifier = document.getElementsByName('creator')[0].value || "admin";
-
-                    await submitRowUpdate(id, newRemark, modifier, row, originalActionHtml);
-                };
-
-            } else {
-                const errorData = await response.json();
-                alert(`保存失敗: ${errorData.message}`);
+                // 將小勾保存按鈕插入到「取消」按鈕前面
+                actionContainer.insertBefore(saveBtn, actionContainer.firstChild);
             }
-        } catch (error) {
-            console.error("保存出錯:", error);
         }
-    }
+    });
 
-    btnSave.disabled = false;
-    alert("保存作業執行完畢！");
+    newRow.querySelector('.cancel-new-row').addEventListener('click', () => {
+        newRow.style.opacity = '0';
+        newRow.style.transform = 'translateY(-20px)';
+        setTimeout(() => newRow.remove(), 300);
+    });
 });
 // #endregion
 
-// #region 修改
+// #region 3. 修改模式：偵測變更並動態顯示保存按鈕
 let isEditMode = false;
 
 document.getElementById('btnEdit').addEventListener('click', function () {
-    const table = document.getElementById('dataTableBody');
-
-    if (!table) {
-        console.error("錯誤：找不到 id='dataTableBody' 的表格元素，請檢查 HTML。");
-        alert("系統錯誤：找不到表格元件。");
-        return;
-    }
-
     isEditMode = !isEditMode;
+    const rows = document.querySelectorAll('#dataTableBody tr');
 
     if (isEditMode) {
-        this.classList.replace('btn-info', 'btn-warning');
-        this.innerHTML = '<i class="bi bi-x-circle"></i> 取消修改模式';
-        table.classList.add('table-hover-edit');
-        alert("修改模式已開啟，請直接點選下方表格中想修改的那一行。");
+        this.innerHTML = '<i class="bi bi-x-circle me-2"></i>取消修改'; // 改為取消，強調狀態
+        this.classList.add('active-edit');
+
+        rows.forEach(tr => {
+            const remarkCell = tr.children[2]; // 備註欄位
+            const originalRemark = remarkCell.innerText.trim();
+            const actionCell = tr.children[4]; // 操作欄位 (索引 4)
+
+            // 1. 插入輸入框，並紀錄原始值
+             remarkCell.innerHTML = `
+                <input type="text" class="form-control-ios edit-input"
+                       value="${originalRemark}"
+                       data-old-value="${originalRemark}"
+                       oninput="debouncedInputChange(this)">
+            `;
+        });
     } else {
         resetEditButton();
+        queryFiles(); // 取消時刷新回復原始狀態
     }
 });
+function resetEditButton() {
+    const btn = document.getElementById('btnEdit');
+    // 恢復為原本的「白底黑字」樣式與「修改」字樣
+    btn.innerHTML = '<i class="bi bi-pencil-square me-2"></i>修改';
+    btn.classList.remove('active-edit');
 
-document.getElementById('dataTableBody').addEventListener('click', function (e) {
-    if (!isEditMode) return;
-    const row = e.target.closest('tr');
-    if (!row || row.classList.contains('editing') || row.classList.contains('is-new')) return;
-    console.log("偵測到點擊行，進入編輯模式");
-    enterRowEditMode(row);
-});
-function enterRowEditMode(row) {
-    const existingEditingRow = document.querySelector('#dataTableBody tr.editing');
-    if (existingEditingRow) {
-        alert("請先完成或取消目前的修改。");
-        return;
-    }
+    // 移除表格可能存在的編輯模式特定類別（如陰影效果）
+    const table = document.getElementById('dataTableBody');
+    if (table) table.classList.remove('table-hover-edit');
 
-    row.classList.add('editing', 'table-info');
-
-    const remarkCell = row.cells[3];
-    const originalRemark = remarkCell.innerText;
-
-    remarkCell.innerHTML = `<input type="text" class="form-control form-control-sm" value="${originalRemark}">`;
-
-    const actionCell = row.cells[1];
-    const originalActionHtml = actionCell.innerHTML; 
-
-    actionCell.innerHTML = `
-        <button class="btn btn-xs btn-success btn-save-row">保存</button>
-        <button class="btn btn-xs btn-secondary btn-cancel-row">取消</button>
-    `;
-
-    actionCell.querySelector('.btn-cancel-row').onclick = (e) => {
-        e.stopPropagation(); 
-        remarkCell.innerText = originalRemark;
-        actionCell.innerHTML = originalActionHtml;
-        row.classList.remove('editing', 'table-info');
-    };
-
-    actionCell.querySelector('.btn-save-row').onclick = async (e) => {
-        e.stopPropagation();
-        const newRemark = remarkCell.querySelector('input').value;
-        const id = row.getAttribute('data-id');
-        const modifier = document.getElementsByName('creator')[0].value || "admin";
-
-        await submitRowUpdate(id, newRemark, modifier, row, originalActionHtml);
+    isEditMode = false;
+}
+// 1. 定義防抖工具函式
+function debounce(func, delay = 500) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer); // 每次觸發就清除上一個定時器
+        timer = setTimeout(() => {
+            func.apply(this, args); // 延遲時間到才執行
+        }, delay);
     };
 }
 
-async function submitRowUpdate(id, remark, modifier, row, originalHtml) {
+// 2. 將原本的邏輯包裝起來
+const debouncedInputChange = debounce(function (input) {
+    const tr = input.closest('tr');
+    const actionCell = tr.querySelector('.text-center .d-flex');
+    const oldValue = input.dataset.oldValue;
+    const newValue = input.value.trim();
+    const saveBtnId = `save_${tr.dataset.id}`;
+
+    if (newValue !== oldValue) {
+        if (!document.getElementById(saveBtnId)) {
+            const saveBtn = document.createElement('button');
+            saveBtn.id = saveBtnId;
+            saveBtn.className = 'btn btn-sm btn-white-pill rounded-circle p-2 reveal-btn shadow-sm';
+            saveBtn.innerHTML = '<i class="bi bi-check-lg text-dark"></i>';
+            saveBtn.title = '點擊保存';
+            saveBtn.onclick = () => updateItem(tr.dataset.id, newValue);
+
+            actionCell.insertBefore(saveBtn, actionCell.firstChild);
+        }
+    } else {
+        const existingBtn = document.getElementById(saveBtnId);
+        if (existingBtn) existingBtn.remove();
+    }
+}, 500);
+
+async function updateItem(id, newRemark) {
     const formData = new FormData();
-    formData.append('id', id);
-    formData.append('remark', remark || "");
-    formData.append('modifier', modifier);
+    formData.append("id", id);
+    formData.append("remark", newRemark);
+    formData.append("modifier", currentLoginUser);
 
     try {
-        console.log(`準備更新 ID: ${id}, 備註: ${remark}`);
+        // 顯示 Loading
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) loader.style.display = 'flex';
 
         const response = await fetch(`${BACKEND_URL}/api/MasterData/UpdateMasterData`, {
             method: 'POST',
             body: formData
         });
 
-        if (response.ok) {
-            alert("修改成功！");
-            row.cells[3].innerText = remark;
-            row.cells[1].innerHTML = originalHtml;
-            row.classList.remove('editing', 'table-info');
-            console.log("正在重新整理資料清單...");
-            queryFiles();
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            alert("✨ " + (result.message || result.Message || "修改成功"));
+
+            // 1. 先執行重新查詢，更新資料庫最新的「修改人」與「修改時間」
+            if (typeof queryFiles === "function") {
+                await queryFiles();
+            }
+
+            // 2. 核心微調：直接呼叫重設函式，將按鈕文字與狀態恢復原狀
+            resetEditButton();
+
+            // 3. 確保編輯模式旗標已關閉，防止邏輯衝突
+            isEditMode = false;
         } else {
-            const errorData = await response.json();
-            alert("修改失敗：" + (errorData.message || "伺服器錯誤"));
+            alert("❌ 修改失敗：" + (result.message || "發生錯誤"));
         }
-    } catch (err) {
-        console.error("連線錯誤:", err);
-        alert("無法連線至伺服器，請檢查網路狀態。");
+    } catch (error) {
+        console.error("更新請求錯誤:", error);
+        alert("系統連線異常");
+    } finally {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) loader.style.display = 'none';
     }
-}
-
-function resetEditButton() {
-    const btn = document.getElementById('btnEdit');
-    const table = document.getElementById('dataTableBody');
-
-    if (btn) {
-        btn.classList.replace('btn-warning', 'btn-info');
-        btn.innerHTML = '<i class="bi bi-pencil-square"></i> 修改';
-    }
-
-    if (table) {
-        table.classList.remove('table-hover-edit');
-    }
-    isEditMode = false;
 }
 // #endregion
 
-// #region 刪除
-let isDeleteMode = false;
+// #region 4. 刷新邏輯：過場動畫 
+const btnRefresh = document.getElementById('btnRefresh');
+if (btnRefresh) {
+    btnRefresh.addEventListener('click', function () {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = 'flex';
+        setTimeout(() => location.reload(), 300);
+    });
+}
+// #endregion
 
-document.getElementById('btnDelete').addEventListener('click', function () {
-    isDeleteMode = !isDeleteMode;
-    const table = document.getElementById('dataTableBody');
+// #region 5. 人員選單：優化查詢體驗 [cite: 197, 207]
+// #region 5. 人員選單：優化動態展示體驗
+function fetchUserData() {
+    const searchInput = document.getElementById('modalSearchUser');
+    const userKeyword = searchInput ? searchInput.value : "";
+    const tbody = document.getElementById('userModalTableBody');
 
-    if (isDeleteMode) {
-        // 切換按鈕狀態
-        this.classList.replace('btn-info', 'btn-danger');
-        this.innerHTML = '<i class="bi bi-x-circle"></i> 取消刪除模式';
-        table.classList.add('table-hover-delete'); 
-        alert("刪除模式已開啟，請點選您想刪除的資料行。");
-    } else {
-        resetDeleteButton();
-    }
-});
+    // 清空並顯示搜尋中狀態
+    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">搜尋中...</td></tr>';
 
-document.getElementById('dataTableBody').addEventListener('click', async function (e) {
-    if (!isDeleteMode) return;
+    fetch(`${BACKEND_URL}/api/MasterData/GetUsers?userKeyword=${encodeURIComponent(userKeyword)}`)
+        .then(res => res.json())
+        .then(data => {
+            tbody.innerHTML = '';
 
-    const row = e.target.closest('tr');
-    if (!row || row.classList.contains('is-new')) return;
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">查無人員資料</td></tr>';
+                return;
+            }
 
-    const id = row.getAttribute('data-id');
-    const fileName = row.cells[2].innerText; // 假設檔案名稱在第 3 欄
+            data.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'cursor-pointer'; // 初始狀態會繼承 CSS 中的 #dataTableBody tr 設定 [cite: 54]
 
-    if (confirm(`確定要刪除檔案 [${fileName}] 嗎？\n(此操作為軟刪除，資料將保留在資料庫中)`)) {
-        await executeDelete(id, row);
-    }
-});
+                // 設定 ID 與內容 [cite: 28, 37]
+                tr.setAttribute('data-id', item.EmplNo);
+                tr.onclick = () => selectUser(item.EmplNo);
 
-async function executeDelete(id, row) {
-    const modifier = document.getElementsByName('creator')[0].value || "admin";
+                tr.innerHTML = `
+        <td class="ps-4">${index + 1}</td>
+        <td class="fw-bold">${item.EmplNo}</td>
+        <td class="pe-4">${item.Username}</td>
+    `;
+
+                tbody.appendChild(tr);
+
+                // 使用妳提議的邏輯：統一透過 CSS Class 觸發動畫
+                setTimeout(() => {
+                    tr.classList.add('reveal');
+                }, index * 50); // 每行間隔 50 毫秒 [cite: 32]
+            });
+        })
+        .catch(err => {
+            console.error("人員查詢失敗:", err);
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger py-4">系統錯誤，請稍後再試</td></tr>';
+        });
+}
+// #endregion
+
+function selectUser(EmplNo) {
+    document.getElementById('inputCreator').value = EmplNo;
+    const modal = bootstrap.Modal.getInstance(document.getElementById('userSelectModal'));
+    modal.hide();
+}
+// #endregion
+
+// 刪除按鈕邏輯
+async function deleteItem(id) {
+    // 1. 使用原生確認視窗 (後續可美化為 iOS Modal)
+    if (!confirm("確定要刪除這筆資料嗎？此操作無法復原。")) return;
+
+    // 2. 封裝 FormData 對接後端 [FromForm] 參數
     const formData = new FormData();
-    formData.append('id', id);
-    formData.append('modifier', modifier);
+    formData.append("id", id);
+    formData.append("modifier", currentLoginUser); // [cite: 111, 112]
 
     try {
+        // 顯示載入遮罩
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) loader.style.display = 'flex';
+
         const response = await fetch(`${BACKEND_URL}/api/MasterData/DeleteMasterData`, {
             method: 'POST',
             body: formData
         });
 
+        const result = await response.json();
+
         if (response.ok) {
-            alert("刪除成功！");
-            queryFiles(); 
+            alert("✅ " + result.message);
+
+            // 3. 執行「縮小消失」動畫
+            const tr = document.querySelector(`tr[data-id="${id}"]`);
+            if (tr) {
+                tr.style.opacity = '0';
+                tr.style.transform = 'scale(0.9)'; // 輕微縮小效果
+                tr.style.transition = 'all 0.3s ease';
+
+                // 等待動畫結束後移除 DOM 並重新排序或查詢
+                setTimeout(() => {
+                    tr.remove();
+                    queryFiles(); // 重新整理列表確保序號正確
+                }, 300);
+            }
         } else {
-            alert("刪除失敗");
+            alert("❌ 刪除失敗：" + result.message);
         }
-    } catch (err) {
-        console.error("連線錯誤:", err);
+    } catch (error) {
+        console.error("刪除 API 請求錯誤:", error);
+        alert("系統連線異常，請稍後再試。");
     } finally {
-        resetDeleteButton();
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) loader.style.display = 'none';
     }
 }
 
-function resetDeleteButton() {
-    const btn = document.getElementById('btnDelete');
-    btn.classList.replace('btn-danger', 'btn-info');
-    btn.innerHTML = '<i class="bi bi-trash"></i> 刪除';
-    document.getElementById('dataTableBody').classList.remove('table-hover-delete');
-    isDeleteMode = false;
-}
-// #endregion
+// 下載檔案邏輯
+// 修改後的下載函式
+async function downloadFile(btnElement) {
+    // 1. 從按鈕往上找到該行 tr
+    const tr = btnElement.closest('tr');
+    if (!tr) return;
 
-// #region 導出
-document.getElementById('btnExport').addEventListener('click', function () {
-    const createUser = document.getElementsByName('creator')[0].value;
-    const createDate = document.getElementsByName('createTime')[0].value;
-    console.log("正在準備匯出資料...");
-    const url = `${BACKEND_URL}/api/MasterData/ExportToExcel?creator=${encodeURIComponent(createUser)}&date=${encodeURIComponent(createDate)}`;
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'ExportData.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-});
-// #endregion
+    // 2. 抓取該行第二個單元格 (td) 的文字內容
+    // 這樣可以確保抓到的是 \localhost... 完整的路徑，且不會有轉義字元問題
+    const filePath = tr.children[1].innerText.trim();
 
-// #region 導入
-document.getElementById('btnImport').addEventListener('click', function () {
-    const currentEmplno = currentLoginUser;
-
-    if (!currentEmplno) {
-        alert("無法取得操作人員資訊，請重新登入。");
+    if (!filePath) {
+        alert("找不到檔案路徑內容");
         return;
     }
+
+    try {
+        // 顯示載入遮罩 [cite: 31, 71]
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) loader.style.display = 'flex';
+
+        // 3. 對接後端 API [cite: 26, 27]
+        // 務必使用 encodeURIComponent，因為路徑含特殊符號
+        const url = `${BACKEND_URL}/api/MasterData/DownloadFile?fileName=${encodeURIComponent(filePath)}`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || "檔案下載失敗");
+        }
+
+        // 4. 處理檔案串流下載
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = downloadUrl;
+
+        // 從路徑擷取檔名 
+        const fileName = filePath.split('\\').pop().split('/').pop();
+        a.download = fileName;
+
+        document.body.appendChild(a);
+        a.click();
+
+        // 5. 資源回收
+        window.URL.revokeObjectURL(downloadUrl);
+        document.body.removeChild(a);
+
+    } catch (err) {
+        console.error("下載發生錯誤:", err);
+        alert("❌ 下載失敗：" + err.message);
+    } finally {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) loader.style.display = 'none';
+    }
+}
+
+// #region 6. 匯入與匯出邏輯
+document.addEventListener('DOMContentLoaded', function () {
+    const btnExport = document.getElementById('btnExport');
+    const btnImport = document.getElementById('btnImport');
+
+    if (btnExport) btnExport.addEventListener('click', exportToExcel);
+    if (btnImport) btnImport.addEventListener('click', triggerImport);
+});
+
+// --- 匯出功能 ---
+async function exportToExcel() {
+    // 獲取當前查詢條件，確保匯出的資料與畫面一致 
+    const creator = document.getElementById('inputCreator').value;
+    const dateRange = document.getElementById('inputCreateTime').value;
+
+    try {
+        showLoader(true);
+        // 對接後端 Get 請求 [cite: 3]
+        const url = `${BACKEND_URL}/api/MasterData/ExportToExcel?creator=${encodeURIComponent(creator)}&date=${encodeURIComponent(dateRange)}`;
+        const response = await fetch(url);
+
+        if (!response.ok) throw new Error("匯出失敗");
+
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = `MasterData_Export_${new Date().getTime()}.xlsx`; // 設定預設檔名
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(downloadUrl);
+        a.remove();
+    } catch (err) {
+        alert("❌ 匯出 Excel 發生錯誤: " + err.message);
+    } finally {
+        showLoader(false);
+    }
+}
+
+// --- 匯入功能 ---
+function triggerImport() {
+    // 建立一個隱藏的 file input，保持介面美觀
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = '.xlsx, .xls';
 
-    fileInput.onchange = async e => {
+    fileInput.onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
         const formData = new FormData();
-        formData.append('file', file);
-        formData.append('creator', currentEmplno); 
+        formData.append("file", file);
+        formData.append("creator", currentLoginUser); // 對接後端 [FromForm] creator [cite: 42]
 
         try {
-            console.log(`人員 ${currentEmplno} 正在導入檔案...`);
-
+            showLoader(true);
             const response = await fetch(`${BACKEND_URL}/api/MasterData/ImportExcel`, {
                 method: 'POST',
                 body: formData
             });
 
             const result = await response.json();
-
             if (response.ok) {
-                alert(`導入成功！${result.message}`);
-                queryFiles(); 
+                alert(`✨ 匯入成功！共匯入 ${result.count || 0} 筆資料。`);
+                if (typeof queryFiles === "function") queryFiles(); // 刷新列表 
             } else {
-                alert(`導入失敗：${result.message}`);
+                alert("❌ 匯入失敗：" + result.message);
             }
         } catch (err) {
-            console.error("導入錯誤:", err);
-            alert("系統連線異常，請稍後再試。");
+            alert("❌ 系統錯誤：" + err.message);
+        } finally {
+            showLoader(false);
         }
     };
-
     fileInput.click();
-});
-// #endregion
+}
 
-// #region 刷新
-const btnRefresh = document.getElementById('btnRefresh');
-const loadingOverlay = document.getElementById('loadingOverlay');
-
-if (btnRefresh) {
-    btnRefresh.addEventListener('click', function () {
-        if (loadingOverlay) {
-            loadingOverlay.style.display = 'flex';
-        }
-        setTimeout(() => {
-            location.reload();
-        }, 100);
-    });
+// 輔助函式：控制載入遮罩
+function showLoader(show) {
+    const loader = document.getElementById('loadingOverlay');
+    if (loader) loader.style.display = show ? 'flex' : 'none';
 }
 // #endregion
 
-//#region 人員視窗查詢
-function fetchUserData() {
-    const searchInput = document.getElementById('modalSearchUser');
-    const userKeyword = searchInput ? searchInput.value : "";
-    const url = `${BACKEND_URL}/api/MasterData/GetUsers?userKeyword=${encodeURIComponent(userKeyword)}`;
-    fetch(url)
-        .then(response => {
-            if (!response.ok) throw new Error("API 路徑錯誤或伺服器無回應：" + response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log("後端回應：", data);
-
-            const tbody = document.getElementById('userModalTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            if (!Array.isArray(data)) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="3">${data.message || '格式非陣列'}</td>`;
-                tbody.appendChild(tr);
-                return;
-            }
-
-            data.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.style.cursor = "pointer"; 
-
-                tr.onclick = function () {
-                    selectUser(item.EmplNo, item.EmplNo);
-                };
-
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${item.EmplNo || ''}</td>
-                    <td>${item.Username || ''}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        })
-        .catch(err => console.error("連線失敗：", err));
-}
-document.getElementById('userSelectModal').addEventListener('show.bs.modal', function () {
-    // 模擬資料
-    //const tbody = document.getElementById('userModalTableBody');
-    //const users = [
-    //    { id: 'A001', name: '張三'},
-    //    { id: 'A002', name: '李四'}
-    //];
-
-    //tbody.innerHTML = users.map((u, index) => `
-    //    <tr style="cursor:pointer" onclick="selectUser('${u.name}')">
-    //        <td>${index + 1}</td>
-    //        <td>${u.id}</td>
-    //        <td>${u.name}</td>
-    //    </tr>
-    //`).join('');
-    fetchUserData();
-});
-
-function selectUser(EmplNo) {
-    document.getElementById('inputCreator').value = EmplNo;
-
-    const modalElement = document.getElementById('userSelectModal');
-    const modalInstance = bootstrap.Modal.getInstance(modalElement);
-    modalInstance.hide();
-}
-//#endregion
-
-//日期元件
+// 初始化日期元件
 document.addEventListener('DOMContentLoaded', function () {
     flatpickr("#inputCreateTime", {
-        locale: "zh_tw",
-        dateFormat: "Y-m-d",
-        allowInput: false, 
-    });
-
-    const userModal = document.getElementById('userSelectModal');
-    userModal.addEventListener('show.bs.modal', function () {
-        fetchUserData(); 
-    });
-
-    document.getElementById('modalSearchUser').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') fetchUserData();
+        mode: "range",               // 範疇模式
+        dateFormat: "Y/m/d",         // 顯示格式
+        locale: "zh_tw",             // 繁體中文
+        showMonths: 1,
+        disableMobile: true,         // 禁止在手機上啟動原生 UI，保持視覺一致
+        // 自定義左右箭頭，對接妳使用的 Bootstrap Icons
+        prevArrow: '<i class="bi bi-chevron-left"></i>',
+        nextArrow: '<i class="bi bi-chevron-right"></i>',
+        // 當日期改變時，妳可以選擇是否自動執行一次查詢
+        onChange: function (selectedDates, dateStr) {
+            console.log("選取的日期範圍:", dateStr);
+        },
+        onOpen: function (selectedDates, dateStr, instance) {
+            instance.calendarContainer.classList.add("dark-theme-calendar");
+        }
     });
 });

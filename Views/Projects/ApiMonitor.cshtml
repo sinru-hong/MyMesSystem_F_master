@@ -1,53 +1,79 @@
-﻿<div class="container-fluid py-4">
-    <h4 class="mb-4 text-primary"><i class="bi bi-terminal me-2"></i>API 介面模擬與監控</h4>
-
-    <div class="input-group mb-3 shadow-sm">
-        <select id="httpMethod" class="btn btn-outline-secondary fw-bold" style="width: 100px;">
-            <option value="POST">POST</option>
-            <option value="GET">GET</option>
-        </select>
-        <input type="text" id="apiUrl" class="form-control" value="https://localhost:44326/api/ProjectsApi/ProcessApiDemo">
-        <button class="btn btn-primary px-4" id="btnSendApi">Send</button>
+﻿<div class="container-fluid py-3 animate__animated animate__fadeIn">
+    <div class="d-flex align-items-center mb-4 ms-2">
+        <div class="icon-box bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+            <i class="bi bi-terminal fs-5"></i>
+        </div>
+        <div>
+            <h4 class="fw-bold mb-0">API 模擬監控中心</h4>
+            <small class="text-muted">API Interface Simulation & Monitoring</small>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <small class="text-muted me-2">快速切換：</small>
-        <span class="badge bg-light text-dark border p-2 cursor-pointer" style="cursor:pointer"
-              onclick="switchApi('POST', 'https://localhost:44326/api/ProjectsApi/ProcessApiDemo')">
-            POST 範例 (驗證邏輯)
-        </span>
-        <span class="badge bg-light text-dark border p-2 cursor-pointer ms-2" style="cursor:pointer"
-              onclick="switchApi('GET', 'https://localhost:44326/api/ProjectsApi/ProcessGetDemo?message=HelloWorld')">
-            GET 範例 (參數傳遞)
-        </span>
+    <div class="card-ios p-3 mb-4 unified-card-style">
+        <div class="row g-3">
+            <div class="col-md-2">
+                <select id="httpMethod" class="form-control-ios fw-bold text-center w-100 shadow-sm custom-select-ios">
+                    <option value="POST">POST</option>
+                    <option value="GET">GET</option>
+                </select>
+            </div>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <input type="text" id="apiUrl"
+                           class="form-control-ios flex-sm-grow-1 shadow-sm"
+                           placeholder="https://localhost:XXXXX/api/後端Controller名稱/API方法名稱">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-dark w-100 rounded-pill py-2 shadow-sm" id="btnSendApi">
+                    <i class="bi bi-send-fill me-2"></i>傳送
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-3 ms-2 d-flex align-items-center gap-2 flex-wrap">
+            <small class="text-muted fw-bold me-2">
+                <i class="bi bi-lightning-charge"></i> 快速切換：
+            </small>
+
+            <span class="badge badge-ios-pill"
+                  onclick="switchApi('POST', 'https://localhost:44326/api/ProjectsApi/ProcessApiDemo')">
+                <i class="bi bi-shield-check me-1"></i> POST 範例 (驗證邏輯)
+            </span>
+
+            <span class="badge badge-ios-pill"
+                  onclick="switchApi('GET', 'https://localhost:44326/api/ProjectsApi/ProcessGetDemo?message=HelloWorld')">
+                <i class="bi bi-cloud-arrow-down me-1"></i> GET 範例 (獲取資料)
+            </span>
+        </div>
     </div>
 
-    <div class="row g-3">
+    <div class="row g-4 overflow-hidden">
         <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light fw-bold text-secondary d-flex justify-content-between align-items-center">
-                    <span><i class="bi bi-file-earmark-code me-1"></i> Request Body (JSON)</span>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-xs btn-outline-success" onclick="loadSample(true)">正確範本</button>
-                        <button type="button" class="btn btn-xs btn-outline-danger" onclick="loadSample(false)">錯誤範本</button>
+            <div class="card-ios unified-card-style h-100 overflow-hidden">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center p-4">
+                    <span class="fw-bold text-muted"><i class="bi bi-code-slash me-2"></i>Request JSON</span>
+
+                    <div id="sampleBtnGroup" class="btn-group btn-group-sm rounded-pill overflow-hidden border d-none">
+                        <button type="button" class="btn btn-light border-0" onclick="loadSample(true)">正確</button>
+                        <button type="button" class="btn btn-light border-0" onclick="loadSample(false)">錯誤</button>
                     </div>
                 </div>
-                <div class="card-body p-0">
-                    <textarea id="requestJson" class="form-control border-0 font-monospace p-3"
-                              style="height: 400px; background-color: #fcfcfc;" placeholder="請輸入 JSON 或點選範本..."></textarea>
+                <div class="p-3">
+                    <textarea id="requestJson" class="form-control code-editor"
+                              placeholder="在此輸入 JSON 內容..."></textarea>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light fw-bold text-secondary d-flex justify-content-between">
-                    <span><i class="bi bi-reply-all me-1"></i> Response Body</span>
-                    <span id="resStatus" class="badge bg-success" style="display:none;">Status: 200 OK</span>
+            <div class="card-ios unified-card-style h-100 dark-terminal overflow-hidden">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center p-4">
+                    <span class="fw-bold text-light"><i class="bi bi-reply-all me-2"></i>Response Body</span>
+                    <span id="resStatus" class="badge bg-success rounded-pill" style="display:none;">200 OK</span>
                 </div>
-                <div class="card-body p-0">
-                    <pre id="responseJson" class="m-0 p-3 bg-dark text-info font-monospace"
-                         style="height: 400px; overflow-y: auto;">// 回傳結果將在此顯示...</pre>
+                <div class="p-3">
+                    <pre id="responseJson" class="m-0 code-output">// 待命測試中...</pre>
                 </div>
             </div>
         </div>
@@ -56,4 +82,5 @@
 
 @section Scripts {
     <script src="~/js/ApiMonitor.js"></script>
+    <link rel="stylesheet" href="~/css/ApiMonitor.css" />
 }

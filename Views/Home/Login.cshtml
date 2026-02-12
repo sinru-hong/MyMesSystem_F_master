@@ -1,68 +1,58 @@
-﻿@{
-    Layout = null;
-}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>登入 - MES系統</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+﻿<div class="login-wrapper animate__animated animate__fadeIn">
+    <div class="bg-glow"></div>
 
-    <style>
-        body {
-            background-color: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
+    <div class="login-card unified-card-style">
+        <div class="text-center mb-5">
+            <div class="login-icon mb-3">
+                <i class="bi bi-cpu"></i>
+            </div>
+            <h3 class="fw-bold text-dark mb-1">MES 製造執行系統</h3>
+            <p class="text-muted small">Manufacturing Execution System</p>
+        </div>
 
-        .login-card {
-            width: 400px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            background: white;
-            border-radius: 8px;
-        }
-        /* 【建議】增加點擊感 */
-        .password-toggle {
-            cursor: pointer;
-        }
-
-            .password-toggle:hover {
-                background-color: #e9ecef;
-            }
-    </style>
-</head>
-<body>
-    <div class="login-card">
-        <h3 class="text-center mb-4">MES 系統登入</h3>
         <form action="/Home/VerifyLogin" method="post">
-            <div class="mb-3">
-                <label class="form-label">帳號</label>
-                <input type="text" name="emplNo" class="form-control"
-                       value="@ViewBag.SavedUsername" required />
+            <div class="mb-4">
+                <label class="form-label small fw-bold text-muted mb-2 ms-2">
+                    <i class="bi bi-person-badge me-1"></i>員工工號
+                </label>
+                <input type="text" name="emplNo" class="form-control-ios"
+                       value="@ViewBag.SavedUsername" placeholder="請輸入工號..." required />
             </div>
 
-            <div class="mb-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <label class="form-label mb-0">密碼</label>
+            <div class="mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-2 ms-2">
+                    <label class="form-label small fw-bold text-muted mb-0">
+                        <i class="bi bi-shield-lock me-1"></i>登入密碼
+                    </label>
                     @if (ViewBag.Error != null)
                     {
-                        <small class="text-danger fw-bold">@ViewBag.Error</small>
+                        <span class="badge bg-danger-soft text-danger animate__animated animate__shakeX">
+                            <i class="bi bi-exclamation-circle me-1"></i>@ViewBag.Error
+                        </span>
                     }
                 </div>
-                <div class="input-group">
-                    <input type="password" name="password" id="passwordInput" class="form-control" required />
-                    <span class="input-group-text password-toggle" onclick="togglePassword()">
+                <div class="input-group-ios">
+                    <input type="password" name="password" id="passwordInput"
+                           class="form-control-ios w-100" placeholder="請輸入密碼..." required />
+                    <span class="password-toggle-ios" onclick="togglePassword()">
                         <i class="bi bi-eye-slash" id="toggleIcon"></i>
                     </span>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100">登入</button>
-        </form>
-    </div>
 
+            <button type="submit" class="btn btn-dark-ios w-100 py-3 shadow">
+                進入系統 <i class="bi bi-arrow-right-short ms-1"></i>
+            </button>
+        </form>
+
+        <div class="text-center mt-5">
+            <p class="text-muted smaller">© 2026 欣汝 | 系統版本 v2.1.0</p>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Login.css" />
     <script>
         function togglePassword() {
             const passwordInput = document.getElementById('passwordInput');
@@ -79,5 +69,4 @@
             }
         }
     </script>
-</body>
-</html>
+}

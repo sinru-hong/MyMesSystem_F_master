@@ -1,100 +1,75 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    // 從 Session 判斷登入狀態
+    var userEmplNo = HttpContextAccessor.HttpContext?.Session.GetString("UserEmplNo");
+    bool IsLoggedIn = !string.IsNullOrEmpty(userEmplNo);
+}
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MyMesSystem_F</title>
+    <title>@ViewData["Title"] - MES系統</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
     @await RenderSectionAsync("Styles", required: false)
-    <link rel="stylesheet" href="~/MyMesSystem_F.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-0">
-            <div class="container-fluid">
-                <a class="navbar-brand">你好，我是洪欣汝！</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">首頁</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="btn btn-outline-danger" asp-area="" asp-controller="Home" asp-action="Login">登出</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container-fluid p-0">
-        <div class="row m-0">
-            <nav class="hover-sidebar bg-light border-end">
-                <div class="sidebar-content pt-0">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark py-3 border-bottom d-flex justify-content-between align-items-center"
-                               data-bs-toggle="collapse" href="#aboutMe">
-                                <span><i class="bi bi-person-fill me-2"></i>關於欣汝</span>
-                                <small>▼</small>
-                            </a>
-                            <div class="collapse show" id="aboutMe">
-                                <ul class="nav flex-column ps-3 bg-white">
-                                    <li class="nav-item">
-                                        <a class="nav-link text-muted py-2" href="@Url.Action("About", "Projects")">基本簡介</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-muted py-2" href="@Url.Action("LanguageAbility", "Projects")">語言能力 (N5/550)</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark py-3 border-bottom d-flex justify-content-between align-items-center"
-                               data-bs-toggle="collapse" href="#menuMES">
-                                <span><i class="bi bi-cpu me-2"></i>MES 專案開發經驗</span>
-                                <small>▼</small>
-                            </a>
-                            <div class="collapse show" id="menuMES">
-                                <ul class="nav flex-column ps-3 bg-white border-start border-3 border-info">
-                                    <li class="nav-item">
-                                        <a class="nav-link py-3 text-dark border-bottom px-3" href="@Url.Action("MasterData", "Projects")">
-                                            <i class="bi bi-table text-primary me-2"></i>
-                                            <strong>主數據管理 (MDM)</strong><br />
-                                            <small class="text-muted" style="display: block; line-height: 1.4;">支援高效 CRUD 與批次導入導出</small>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link py-3 text-dark" href="@Url.Action("ApiMonitor", "Projects")">
-                                            <i class="bi bi-cloud-arrow-down text-info me-2"></i>
-                                            <strong>跨系統介面 (API)</strong><br />
-                                            <small class="text-muted">非同步資料串接</small>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+    <div class="d-flex w-100 min-vh-100 p-3" style="background-color: var(--ios-bg);">
+        <div class="main-card-container d-flex w-100 overflow-hidden shadow">
 
-            <main class="main-content px-md-4 pt-2 pb-4 py-4 flex-grow-1" style="overflow-x: hidden; min-width: 0;">
+            @if (IsLoggedIn)
+            {
+                <aside class="inner-sidebar d-flex flex-column align-items-center py-4">
+                    <div class="mb-5">
+                        <img src="~/images/頭像.png" class="rounded-circle border border-2 border-white"
+                             style="width: 45px; height: 45px; object-fit: cover;">
+                    </div>
+
+                    <div class="nav flex-column gap-3">
+                        <a href="@Url.Action("Index", "Home")" class="nav-icon-link">
+                            <i class="bi bi-grid-fill"></i>
+                        </a>
+                        <a href="@Url.Action("About", "Projects")" class="nav-icon-link">
+                            <i class="bi bi-person-vcard-fill"></i>
+                        </a>
+                        <a href="@Url.Action("MasterData", "Projects")" class="nav-icon-link">
+                            <i class="bi bi-database-fill-gear"></i>
+                        </a>
+                        <a href="@Url.Action("ApiMonitor", "Projects")" class="nav-icon-link">
+                            <i class="bi bi-terminal-split"></i>
+                        </a>
+                    </div>
+
+                    <div class="mt-auto">
+                        <a href="@Url.Action("Logout", "Home")" class="text-secondary fs-4 logout-link">
+                            <i class="bi bi-box-arrow-left"></i>
+                        </a>
+                    </div>
+                </aside>
+            }
+
+            <main class="flex-grow-1 pt-3 pb-3 ps-5 pe-5 bg-white overflow-auto">
+                @if (IsLoggedIn)
+                {
+                    <header class="d-flex justify-content-between align-items-center">
+                        <h2 class="fw-bold m-0">@ViewData["Title"]</h2>
+                        <span class="badge rounded-pill bg-light text-dark px-3 py-2 border">
+                            <i class="bi bi-person-circle me-1"></i> @userEmplNo
+                        </span>
+                    </header>
+                }
+
                 @RenderBody()
             </main>
         </div>
     </div>
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - MyMesSystem_F - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

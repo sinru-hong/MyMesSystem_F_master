@@ -1,88 +1,127 @@
-﻿html {
-    font-size: 14px;
+﻿:root {
+    --ios-bg: #e2e8e3; /* 附件中的灰綠色背景 */
+    --inner-sidebar: #1c1c1e; /* 深色側邊欄背景 */
+    --accent-lime: #d2f26c; /* 點綴色 */
 }
 
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
+/* 確保沒有 Sidebar 時 Main 區塊的圓角依然漂亮 */
+.main-card-container {
+    border-radius: 40px; /* 妳最愛的大圓角 */
+    background: white;
+}
+/* 2. 內嵌式側邊欄 (深色條) */
+.inner-sidebar {
+    width: 80px;
+    background-color: var(--inner-sidebar);
+    border-radius: 0; /* 讓它貼齊外層容器 */
+    transition: width 0.3s ease;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb; /* 焦點外框 */
-}
-
-html {
-    position: relative;
-    min-height: 100%;
-}
-
-body {
-    margin-bottom: 60px;
-}
-
-.hover-sidebar .nav-link:hover {
-    background-color: rgba(0, 0, 0, 0.05); /* 背景變色 */
-    color: #000 !important; /* 文字顏色 */
-    transition: background-color 0.3s ease; /* 平滑過渡 */
-}
-
-.hover-sidebar .nav-link {
-    transition: background-color 0.3s ease; /* 平滑過渡 */
-}
-
-/* 側邊欄容器 */
-.hover-sidebar {
-    position: fixed; /* 固定定位 */
-    top: 56px;
-    left: 0;
-    bottom: 0;
-    width: 10px; /* 初始窄寬度 */
-    overflow-x: hidden;
-    transition: width 0.3s ease; /* 展開動畫 */
-    z-index: 2000; /* 頂層層級 */
-    background-color: #f8f9fa; /* 背景色 */
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-    height: 100vh; /* 全高 */
-    position: sticky; /* 滾動固定 */
-    top: 0;
-}
-
-/* 內容區塊 */
-.sidebar-content {
-    padding-top: 0 !important;
-    width: 260px; /* 內容寬度 */
-    opacity: 0; /* 初始隱藏 */
-    transition: opacity 0.2s;
-    white-space: normal; /* 文字換行 */
-}
-
-/* 懸浮狀態 */
-.hover-sidebar:hover {
-    width: 260px; /* 展開寬度 */
-    box-shadow: 4px 0 10px rgba(0,0,0,0.1); /* 右側陰影 */
-}
-
-    .hover-sidebar:hover .sidebar-content {
-        opacity: 1; /* 顯示內容 */
+    /* 滑過時可以展開，模仿附件質感 */
+    .inner-sidebar:hover {
+        width: 100px;
     }
 
-/* 主內容區 */
-.main-content {
-    position: relative;
-    z-index: 1; /* 低於側邊欄 */
-    padding-left: 20px;
-    transition: margin-left 0.3s ease; /* 位移過渡 */
-}
-
-.row.m-0 {
+/* 3. 圖示連結樣式 */
+.nav-icon-link {
+    color: rgba(255,255,255,0.4);
+    font-size: 1.5rem;
+    padding: 12px;
+    border-radius: 15px;
+    transition: all 0.3s;
+    text-decoration: none;
     display: flex;
-    flex-wrap: nowrap; /* 禁止換列 */
+    justify-content: center;
 }
 
-.cursor-pointer:hover {
-    background-color: #e9ecef !important;
-    transform: translateY(-1px); /* 微幅上移 */
-    transition: 0.2s;
+    .nav-icon-link:hover, .nav-icon-link.active {
+        color: #ffffff;
+        background-color: rgba(255,255,255,0.1);
+    }
+
+/* 4. 按鈕白底黑字 (配合附件樣式) */
+.btn-white-pill {
+    background-color: #ffffff !important;
+    color: #1c1c1e !important;
+    border: 1px solid #e5e5ea !important;
+    border-radius: 20px !important;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
+
+    .btn-white-pill:hover {
+        background-color: #f5f5f7 !important;
+    }
+
+/* 1. 設定初始狀態 */
+.card-ios {
+    /* 妳原本可能已經有的圓角與背景設定 */
+    background: #ffffff;
+    border-radius: 40px;
+    /* 關鍵：設定過渡動畫，讓動作看起來平滑不生硬 */
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    /* 初始陰影：非常輕微 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important; /* 加入淡淡的邊框增加質感 */
+}
+
+/* 設定初始狀態與過渡動畫 */
+.btn-dark {
+    background-color: #1c1c1e !important; /* 確保初始是深黑色 */
+    color: #ffffff !important;
+    border: 2px solid #1c1c1e !important; /* 預留邊框防止跳動 */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; /* 平滑變換動畫 */
+}
+
+    /* 滑鼠移動上去後的狀態 (Hover) */
+    .btn-dark:hover {
+        background-color: #ffffff !important; /* 背景變白色 */
+        color: #1c1c1e !important; /* 文字變黑色 */
+        border-color: #1c1c1e !important; /* 加入黑色邊框增加層次感 */
+        transform: translateY(-2px); /* 輕微上浮感，更有互動質感 */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* 增加陰影 */
+    }
+
+/* 2. 設定滑鼠懸停 (Hover) 狀態 */
+/* 我們針對 transition-up 這個類別做效果 */
+.transition-up:hover {
+    /* 向上浮動 10px */
+    transform: translateY(-10px) !important;
+    /* 增加陰影：模擬距離桌面變遠的感覺 */
+    /* 陰影變得更擴散 (30px)、透明度稍微增加 (0.08) */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+    /* 妳可以決定是否要在浮起時稍微加深邊框 */
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 3. 點擊瞬間的效果 (選配：讓使用者更有點擊感) */
+.transition-up:active {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05) !important;
+}
+
+.reveal-text {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease-out forwards;
+    animation-delay: 0.5s; /* 稍微延遲，等標題跑完再出來 */
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 登出按鈕微互動 */
+.logout-link {
+    transition: all 0.3s ease;
+    opacity: 0.6;
+}
+
+    .logout-link:hover {
+        opacity: 1;
+        color: #ff3b30 !important; /* iOS 警告紅 */
+        transform: translateX(-3px);
+    }
