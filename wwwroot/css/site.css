@@ -1,40 +1,194 @@
 ﻿:root {
-    --ios-bg: #e2e8e3; /* 附件中的灰綠色背景 */
-    --inner-sidebar: #1c1c1e; /* 深色側邊欄背景 */
-    --accent-lime: #d2f26c; /* 點綴色 */
+    --ios-bg: #e2e8e3;
+    --inner-sidebar: #1c1c1e;
+    --accent-lime: #d2f26c;
 }
 
-/* 確保沒有 Sidebar 時 Main 區塊的圓角依然漂亮 */
+/* 修改核心容器，確保子元素定位基點正確 */
 .main-card-container {
-    border-radius: 40px; /* 妳最愛的大圓角 */
+    position: relative;
+    border-radius: 40px;
     background: white;
+    overflow: hidden;
 }
-/* 2. 內嵌式側邊欄 (深色條) */
+/* 2. 懸浮膠囊選單 (動態島風格) */
 .inner-sidebar {
-    width: 80px;
-    background-color: var(--inner-sidebar);
-    border-radius: 0; /* 讓它貼齊外層容器 */
-    transition: width 0.3s ease;
+    position: absolute;
+    left: 25px;
+    top: 25px;
+    width: 65px;
+    height: 140px; /* 初始高度僅容納兩個按鈕 */
+    background-color: var(--inner-sidebar) !important;
+    border-radius: 35px !important;
+    z-index: 1100;
+    padding: 15px 0;
+    transition: all 0.25s ease-out;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* 讓 Toggle 在頂，Logout 在底 */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+/* 預設隱藏子選單內容與文字 */
+.sub-menu-area, .nav-text {
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
 }
 
-    /* 滑過時可以展開，模仿附件質感 */
-    .inner-sidebar:hover {
-        width: 100px;
+.sub-menu-area {
+    max-height: 0;
+    overflow: hidden;
+}
+
+/* 3. 點擊「展開選單」後的狀態 (向下拉長，僅顯示圖示) */
+.inner-sidebar.expanded {
+    height: auto; /* 伸長以顯示子選單圖示 */
+    justify-content: flex-start; /* 改為靠上排列 */
+}
+
+    .inner-sidebar.expanded .sub-menu-area {
+        opacity: 1;
+        visibility: visible;
+        max-height: 500px;
+        margin: 20px 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* 修正原本的 center*/
+        padding-left: 0;
+        gap: 15px;
     }
 
-/* 3. 圖示連結樣式 */
+    /* 展開後的寬度與排列調整 */
+    .inner-sidebar.expanded:hover {
+        width: 200px;
+        align-items: flex-start; /* 確保內容物整體靠左排列 [cite: 27] */
+        padding-left: 20px; /* 與下方圖示 hover 時的內距保持一致 [cite: 33] */
+    }
+/* 隱藏展開組件的初始狀態 */
+.expandable-group {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.inner-sidebar.expanded .expandable-group {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 10px;
+}
+
+/* 選單文字樣式 */
+.nav-text {
+    display: none;
+    white-space: nowrap;
+    margin-left: 12px;
+    font-size: 0.95rem;
+    color: white;
+}
+
+.inner-sidebar.expanded:hover .nav-text {
+    opacity: 1;
+    visibility: visible;
+    display: inline-block;
+    margin-left: 12px;
+}
+
+.inner-sidebar.expanded:hover .nav-icon-link {
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.inner-sidebar.expanded .nav-text {
+    display: inline-block;
+}
+
+/* 展開按鈕 (三橫槓) */
+.inner-sidebar.expanded .menu-toggle {
+    align-self: flex-start;
+    margin-bottom: 10px;
+    /* 確保在展開狀態下 padding 維持一致 */
+    padding-left: 20px;
+}
+
+.menu-toggle {
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+    display: flex;
+    /* 修正點：取消強制居中，改為靠左對齊 */
+    justify-content: flex-start;
+    /* 修正點：加入 padding 確保與下方的 nav-icon-link (padding: 10px) 基準線一致  */
+    padding-left: 20px;
+    width: 100%;
+}
+
+
+
+    .menu-toggle:hover {
+        color: var(--accent-lime);
+    }
+
+/* 5. 背景模糊遮罩 (點擊展開時啟動) */
+.menu-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    z-index: 1050;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    border-radius: 40px;
+}
+
+    .menu-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+/* 讓 nav-icon-link 在展開時靠左排列 */
+.inner-sidebar.expanded .nav-icon-link {
+    justify-content: flex-start;
+    padding-left: 20px;
+    width: 100%;
+}
+
+    /* 移除原本 hover 增加寬度的效果，改為輕微放大或光暈，避免遮擋內容 */
+    .inner-sidebar:hover {
+        width: 70px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+/* 3. 調整主內容區塊為滿版 */
+/* 讓主內容區塊避開左上角的膠囊 */
+main.flex-grow-1 {
+    width: 100%;
+    padding-left: 100px !important;
+    border-radius: 40px;
+}
+
+/* 6. 其他細項樣式修正 */
 .nav-icon-link {
     color: rgba(255,255,255,0.4);
     font-size: 1.5rem;
-    padding: 12px;
+    padding: 10px;
     border-radius: 15px;
-    transition: all 0.3s;
     text-decoration: none;
     display: flex;
+    align-items: center;
     justify-content: center;
+    transition: all 0.3s;
 }
 
-    .nav-icon-link:hover, .nav-icon-link.active {
+    .nav-icon-link:hover {
         color: #ffffff;
         background-color: rgba(255,255,255,0.1);
     }

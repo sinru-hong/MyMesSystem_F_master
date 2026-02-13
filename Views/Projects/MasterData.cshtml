@@ -1,6 +1,6 @@
 ﻿<div class="w-100 pe-5">
     <div class="mb-2 reveal-text">
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3 mt-3">
             <h2 class="fw-bold m-0" style="letter-spacing: -1px;">資料管理中心</h2>
         </div>
         <p class="text-muted mt-2">以嚴謹的後端邏輯與解耦思維，建構高可靠性的數據管理基石。</p>
@@ -8,30 +8,30 @@
 
     <div class="d-flex flex-wrap align-items-center gap-3 mb-4 p-3 unified-card-style">
         <div class="d-flex gap-2 flex-wrap"> 
-            <button id="btnRefresh" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm">
-                <i class="bi bi-arrow-clockwise me-2"></i>刷新
+            <button id="btnRefresh" class="btn btn-dark rounded-pill px-3 fw-bold shadow-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" title="刷新">
+                <i class="bi bi-arrow-clockwise me-0"></i>
             </button>
 
-            <button id="btnQuery" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm">
-                <i class="bi bi-search me-2"></i>查詢
+            <button id="btnQuery" class="btn btn-dark rounded-pill px-3 fw-bold shadow-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" title="查詢">
+                <i class="bi bi-search me-0"></i>
             </button>
 
-            <button id="btnAdd" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm">
-                <i class="bi bi-plus-lg me-2"></i>新增
+            <button id="btnAdd" class="btn btn-dark rounded-pill px-3 fw-bold shadow-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" title="新增">
+                <i class="bi bi-plus-lg me-0"></i>
             </button>
 
-            <button id="btnEdit" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm">
-                <i class="bi bi-pencil-square me-2"></i>修改
+            <button id="btnEdit" class="btn btn-dark rounded-pill px-3 fw-bold shadow-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" title="修改">
+                <i class="bi bi-pencil-square me-0"></i>
             </button>
 
         </div>
 
         <div class="ms-auto d-flex gap-2">
-            <button id="btnImport" class="btn btn-white-pill px-4 shadow-sm d-flex align-items-center">
-                <i class="bi bi-file-earmark-excel me-2"></i>匯入
+            <button id="btnImport" class="btn btn-white-pill px-3 shadow-sm d-flex align-items-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="匯入">
+                <i class="bi bi-file-earmark-excel me-0"></i>
             </button>
-            <button id="btnExport" class="btn btn-white-pill px-4 shadow-sm d-flex align-items-center">
-                <i class="bi bi-file-earmark-arrow-up me-2"></i>匯出
+            <button id="btnExport" class="btn btn-white-pill px-3 shadow-sm d-flex align-items-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="匯出">
+                <i class="bi bi-file-earmark-arrow-up me-0"></i>
             </button>
         </div>
     </div>
@@ -49,8 +49,8 @@
 
                     <button class="btn btn-white-pill rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center"
                             type="button" data-bs-toggle="modal" data-bs-target="#userSelectModal"
-                            style="width: 46px; height: 46px; flex-shrink: 0;">
-                        <i class="bi bi-search"></i>
+                            style="width: 49px; height: 37px; flex-shrink: 0;">
+                        <i class="bi bi-pc-display"></i>
                     </button>
                 </div>
             </div>

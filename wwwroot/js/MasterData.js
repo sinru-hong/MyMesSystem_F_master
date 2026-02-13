@@ -32,10 +32,10 @@ async function queryFiles() {
     <td class="text-secondary small">${new Date(item.createTime).toLocaleString('zh-TW', { hour12: false })}</td>
     <td class="pe-4 text-center">
         <div class="d-flex justify-content-center gap-1">
-            <button class="btn btn-sm btn-white-pill rounded-circle p-2" onclick="downloadFile(this)">
+            <button class="btn btn-sm btn-white-pill rounded-circle p-2" onclick="downloadFile(this)" data-bs-toggle="tooltip" data-bs-placement="bottom" title="下載檔案">
                 <i class="bi bi-download"></i>
             </button>
-            <button class="btn btn-sm btn-white-pill rounded-circle p-2 text-danger" onclick="deleteItem('${item.id}')">
+            <button class="btn btn-sm btn-white-pill rounded-circle p-2 text-danger" onclick="deleteItem('${item.id}')" data-bs-toggle="tooltip" data-bs-placement="bottom" title="刪除項目">
                 <i class="bi bi-trash"></i>
             </button>
         </div>
@@ -48,9 +48,25 @@ async function queryFiles() {
                 tr.classList.add('reveal');
             }, index * 50); // 每行間隔 50 毫秒
         });
+
+        reinitTooltips();
     } catch (err) {
         console.error("查詢失敗:", err);
     }
+}
+
+function reinitTooltips() {
+    // 先銷毀舊的 Tooltip 實例防止記憶體洩漏 (選配)
+    var existingTooltips = document.querySelectorAll('.tooltip');
+    existingTooltips.forEach(t => t.remove());
+
+    // 重新初始化
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl, {
+            delay: { "show": 0, "hide": 0 } // 確保與按鈕變色同步
+        });
+    });
 }
 // #endregion
 
@@ -562,4 +578,15 @@ document.addEventListener('DOMContentLoaded', function () {
             instance.calendarContainer.classList.add("dark-theme-calendar");
         }
     });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    // 取得所有帶有 data-bs-toggle="tooltip" 的元素
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl, {
+            // 這裡可以設定延遲顯示時間（毫秒），0 代表同步顯示
+            delay: { "show": 0, "hide": 0 }
+        })
+    })
 });

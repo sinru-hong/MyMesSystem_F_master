@@ -4,6 +4,7 @@
     // 從 Session 判斷登入狀態
     var userEmplNo = HttpContextAccessor.HttpContext?.Session.GetString("UserEmplNo");
     bool IsLoggedIn = !string.IsNullOrEmpty(userEmplNo);
+
 }
 
 <!DOCTYPE html>
@@ -25,43 +26,46 @@
 
             @if (IsLoggedIn)
             {
-                <aside class="inner-sidebar d-flex flex-column align-items-center py-4">
-                    <div class="mb-5">
-                        <img src="~/images/頭像.png" class="rounded-circle border border-2 border-white"
-                             style="width: 45px; height: 45px; object-fit: cover;">
+                <aside id="dynamicIsland" class="inner-sidebar d-flex flex-column align-items-center">
+                    <div class="menu-toggle mb-auto" onclick="toggleMenu()">
+                        <i class="bi bi-list"></i>
                     </div>
 
-                    <div class="nav flex-column gap-3">
+                    <div class="nav flex-column gap-3 align-items-center sub-menu-area">
                         <a href="@Url.Action("Index", "Home")" class="nav-icon-link">
                             <i class="bi bi-grid-fill"></i>
+                            <span class="nav-text">控制台</span>
                         </a>
                         <a href="@Url.Action("About", "Projects")" class="nav-icon-link">
                             <i class="bi bi-person-vcard-fill"></i>
+                            <span class="nav-text">基本資料</span>
                         </a>
                         <a href="@Url.Action("MasterData", "Projects")" class="nav-icon-link">
                             <i class="bi bi-database-fill-gear"></i>
+                            <span class="nav-text">主數據管理</span>
                         </a>
                         <a href="@Url.Action("ApiMonitor", "Projects")" class="nav-icon-link">
                             <i class="bi bi-terminal-split"></i>
+                            <span class="nav-text">API 監控</span>
                         </a>
                     </div>
 
-                    <div class="mt-auto">
-                        <a href="@Url.Action("Logout", "Home")" class="text-secondary fs-4 logout-link">
+                    <div class="mt-auto logout-container w-100 d-flex justify-content-center">
+                        <a href="@Url.Action("Logout", "Home")" class="nav-icon-link logout-btn">
                             <i class="bi bi-box-arrow-left"></i>
+                            <span class="nav-text">安全登出</span>
                         </a>
                     </div>
                 </aside>
-            }
 
+                <div id="menuOverlay" class="menu-overlay" onclick="toggleMenu()"></div>
+            }
+            
             <main class="flex-grow-1 pt-3 pb-3 ps-5 pe-5 bg-white overflow-auto">
                 @if (IsLoggedIn)
                 {
                     <header class="d-flex justify-content-between align-items-center">
                         <h2 class="fw-bold m-0">@ViewData["Title"]</h2>
-                        <span class="badge rounded-pill bg-light text-dark px-3 py-2 border">
-                            <i class="bi bi-person-circle me-1"></i> @userEmplNo
-                        </span>
                     </header>
                 }
 
@@ -74,5 +78,16 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById('dynamicIsland');
+            const overlay = document.getElementById('menuOverlay');
+
+            // 切換展開狀態
+            sidebar.classList.toggle('expanded');
+            // 切換模糊遮罩狀態
+            overlay.classList.toggle('active');
+        }
+    </script>
 </body>
 </html>
